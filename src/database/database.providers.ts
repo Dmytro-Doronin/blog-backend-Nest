@@ -9,4 +9,4 @@ export const databaseProviders = [
         useFactory: (): Promise<typeof mongoose> =>
             mongoose.connect(process.env.MONGO_URL || ''),
     },
-];
+]
