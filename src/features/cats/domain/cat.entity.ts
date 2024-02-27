@@ -2,11 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { randomUUID } from 'crypto';
 
-export type UserDocument = HydratedDocument<User>;
+export type UserDocument = HydratedDocument<Cat>;
 
 @Schema()
-export class User {
-    @Prop()
+export class Cat {
+    @Prop({required: true})
     name: string;
 
     @Prop()
@@ -16,7 +16,7 @@ export class User {
     breed: string;
 
     static create(name: string, age: number, breed: string) {
-        const user = new User();
+        const user = new Cat();
 
         user.name = name;
         user.age = age;
@@ -25,4 +25,4 @@ export class User {
     }
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(Cat);

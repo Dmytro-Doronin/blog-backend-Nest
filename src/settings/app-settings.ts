@@ -51,14 +51,14 @@ class APISettings {
     constructor(private readonly envVariables: EnvironmentVariable) {
         // Application
         this.PORT = this.getNumberOrDefault(
-            process.env.PORT !== undefined ? process.env.PORT : '',
+            envVariables.PORT !== undefined ? envVariables.PORT : '',
             3000
         );
 
         // Database
         this.MONGO_URL =
-            process.env.MONGO_URL !== undefined
-                ? process.env.MONGO_URL
+            envVariables.MONGO_URL !== undefined
+                ? envVariables.MONGO_URL
                 : 'mongodb://localhost/nest';
     }
 

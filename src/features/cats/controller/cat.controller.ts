@@ -1,6 +1,6 @@
 import {Body, Controller, Get, Injectable, Post} from "@nestjs/common";
-import {CatsRepository} from "./cat-repositoriy.service";
-import {CatType} from "./types/cat.type";
+import {CatsRepository} from "../cat-repositoriy.service";
+import {CatType} from "../types/cat.type";
 
 
 @Controller('cats')
