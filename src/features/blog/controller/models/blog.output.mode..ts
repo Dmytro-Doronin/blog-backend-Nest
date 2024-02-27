@@ -1,6 +1,6 @@
 import {BlogDocument} from "../../domain/blog.entity";
 
-export class UserOutputModel {
+export class BlogOutputModel {
     id:	string
     name: string
     description: string
@@ -9,8 +9,16 @@ export class UserOutputModel {
     isMembership: boolean
 }
 
-export const BlogOutputModelMapper = (blog: BlogDocument): UserOutputModel => {
-    const outputModel = new UserOutputModel();
+export class BlogFinalOutputModel {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: BlogOutputModel[]
+}
+
+export const BlogOutputModelMapper = (blog: BlogDocument): BlogOutputModel => {
+    const outputModel = new BlogOutputModel();
 
     outputModel.id = blog.id;
     outputModel.name = blog.name;

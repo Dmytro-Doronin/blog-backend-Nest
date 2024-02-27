@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import {CatsModule} from "./features/cats/cat.module";
-import {CatsController} from "./features/cats/controller/cat.controller";
 import {MongooseModule} from "@nestjs/mongoose";
 import {appSettings} from "./settings/app-settings";
-import {Cat, UserSchema} from "./features/cats/domain/cat.entity";
+import {BlogModule} from "./features/blog/blog.module";
 
 
 
 @Module({
   imports: [
     MongooseModule.forRoot(appSettings.api.MONGO_URL),
-    CatsModule
+    CatsModule,
+    BlogModule
   ],
   controllers: [],
   providers: [],

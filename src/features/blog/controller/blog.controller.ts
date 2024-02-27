@@ -1,9 +1,18 @@
-import {Controller, Get, Query} from "@nestjs/common";
+import {Body, Controller, Get, Post, Query, ValidationPipe} from "@nestjs/common";
 import {NumberPipes} from "../../../common/pipes/number.pipe";
+import {BlogQueryRepository} from "../repositories/blog.query-repository";
+import {BlogService} from "../services/blog.service";
+import {CreateBolgDto} from "./models/create-blog.dto";
 
-@Controller('blogs')
+@Controller('/blogs')
 export class BlogController {
-
+    blogService: BlogService;
+    constructor(
+        blogService: BlogService,
+        private readonly blogsQueryRepository: BlogQueryRepository,
+    ) {
+        this.blogService = blogService
+    }
     @Get()
     async getAllBlogs (
         @Query('searchNameTerm') searchNameTerm: string,
@@ -20,7 +29,21 @@ export class BlogController {
             pageSize: pageSize
         }
 
-        const blogs = await
+        const blogs = await this.blogsQueryRepository.getAllBlogInDb(sortData)
+
+        return blogs
+
+    }
+
+    @Post()
+    async createNewBlogController(@Body(new ValidationPipe()) createBlogDto: CreateBolgDto) {
+
+        const result = await this.blogService.createBlogService({
+            name: createBlogDto.name,
+            description: createBlogDto.description,
+            websiteUrl: createBlogDto.websiteUrl
+        })
+
 
     }
 

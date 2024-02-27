@@ -1,15 +1,15 @@
 import {QueryBlogInputModel} from "../../../common/types/common.types";
 import {InjectModel} from "@nestjs/mongoose";
-import {Blog} from "../domain/blog.entity";
+import {Blogs} from "../domain/blog.entity";
 import {Model} from "mongoose";
-import {BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
+import {BlogFinalOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
 import {filterForSort} from "../../../common/utils/filterForSort";
 
 export class BlogQueryRepository {
 
-    constructor(@InjectModel(Blog.name) private BlogModel: Model<Blog>) {}
+    constructor(@InjectModel(Blogs.name) private BlogModel: Model<Blogs>) {}
 
-    async getAllBlogInDb (sortData: QueryBlogInputModel){
+    async getAllBlogInDb (sortData: QueryBlogInputModel): Promise<BlogFinalOutputModel>{
         const searchNameTerm = sortData.searchNameTerm ?? null
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection  = sortData.sortDirection ?? 'desc'
