@@ -1,13 +1,13 @@
 import {QueryBlogInputModel} from "../../../common/types/common.types";
 import {InjectModel} from "@nestjs/mongoose";
-import {Blogs} from "../domain/blog.entity";
+import {Blog} from "../domain/blog.entity";
 import {Model} from "mongoose";
 import {BlogFinalOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
 import {filterForSort} from "../../../common/utils/filterForSort";
 
 export class BlogQueryRepository {
 
-    constructor(@InjectModel(Blogs.name) private BlogModel: Model<Blogs>) {}
+    constructor(@InjectModel(Blog.name) private BlogModel: Model<Blog>) {}
 
     async getAllBlogInDb (sortData: QueryBlogInputModel): Promise<BlogFinalOutputModel>{
         const searchNameTerm = sortData.searchNameTerm ?? null
@@ -48,4 +48,5 @@ export class BlogQueryRepository {
         }
 
     }
+
 }

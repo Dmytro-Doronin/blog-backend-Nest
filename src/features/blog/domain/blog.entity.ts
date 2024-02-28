@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { randomUUID } from 'crypto';
 
-export type BlogDocument = HydratedDocument<Blogs>;
+export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
-export class Blogs {
+export class Blog {
     @Prop({required: true})
     id: string;
 
@@ -25,7 +25,7 @@ export class Blogs {
     isMembership: boolean
 
     static create(id: string, name: string, description: string, websiteUrl: string, createdAt: string, isMembership: boolean) {
-        const blog = new Blogs();
+        const blog = new Blog();
         blog.id = id;
         blog.name = name;
         blog.description = description
@@ -36,4 +36,4 @@ export class Blogs {
     }
 }
 
-export const BlogSchema = SchemaFactory.createForClass(Blogs);
+export const BlogsSchema = SchemaFactory.createForClass(Blog);
