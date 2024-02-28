@@ -1,4 +1,4 @@
-import {forwardRef, Inject, Injectable} from "@nestjs/common";
+import {forwardRef, Inject, Injectable, Post} from "@nestjs/common";
 import {CreatePostDto} from "../controller/models/create-post.dto";
 import {BlogRepository} from "../../blog/repositories/blog.reposirory";
 import { v4 as uuidv4 } from 'uuid';
@@ -22,15 +22,16 @@ export class PostService {
             return null
         }
 
-        const newPost: Posts = {
-            id: uuidv4(),
+
+        const newPost = Posts.create(
+            uuidv4(),
             title,
             shortDescription,
             content,
             blogId,
-            createdAt: (new Date().toISOString()),
-            blogName: blog.name
-        }
+            blog.name,
+            (new Date().toISOString()),
+        )
 
         const post = await this.postRepository.createPostInDb(newPost)
 

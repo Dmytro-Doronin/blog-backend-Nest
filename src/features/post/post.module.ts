@@ -11,7 +11,7 @@ import {PostController} from "./controller/post.controller";
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Posts.name, schema: PostSchema }]),
-        // forwardRef(() => BlogModule)
+        forwardRef(() => BlogModule)
     ],
     controllers: [PostController],
     providers: [PostRepository, PostService],

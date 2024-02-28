@@ -11,14 +11,24 @@ export class BlogService {
     constructor(private readonly blogRepository: BlogRepository) {}
 
     async createBlogService({name, description, websiteUrl} : CreateBolgDto): Promise<BlogOutputModel | null>  {
-        const newBlog: Blog = {
-            id: uuidv4(),
+
+        const newBlog = Blog.create(
+            uuidv4(),
             name,
             description,
             websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-        }
+            new Date().toISOString(),
+            false
+        )
+
+        // const newBlog: Blog = {
+        //     id: uuidv4(),
+        //     name,
+        //     description,
+        //     websiteUrl,
+        //     createdAt: new Date().toISOString(),
+        //     isMembership: false
+        // }
 
         const blog = await this.blogRepository.createBlogInDb(newBlog)
 
