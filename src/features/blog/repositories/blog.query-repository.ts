@@ -2,9 +2,11 @@ import {QueryBlogInputModel} from "../../../common/types/common.types";
 import {InjectModel} from "@nestjs/mongoose";
 import {Blog} from "../domain/blog.entity";
 import {Model} from "mongoose";
-import {BlogFinalOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
+import {BlogFinalOutputModel, BlogOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
 import {filterForSort} from "../../../common/utils/filterForSort";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 export class BlogQueryRepository {
 
     constructor(@InjectModel(Blog.name) private BlogModel: Model<Blog>) {}
@@ -47,6 +49,19 @@ export class BlogQueryRepository {
             throw new Error('Does not get all blogs')
         }
 
+    }
+
+    async getBlogByIdInDb (id: string): Promise<BlogOutputModel | null>  {
+
+        try {
+            const blog = await this.BlogModel.findOne({id: id})
+            if (!blog) {
+                return null
+            }
+            return BlogOutputModelMapper(blog)
+        } catch (e) {
+            throw new Error('Blog was not found')
+        }
     }
 
 }

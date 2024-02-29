@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {Blog} from "../domain/blog.entity";
 import {BlogRepository} from "../repositories/blog.reposirory";
 import {BlogOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
+import {ChangeBlogByIdTypes} from "../types/commonBlogTypes";
 
 @Injectable()
 export class BlogService {
@@ -21,15 +22,6 @@ export class BlogService {
             false
         )
 
-        // const newBlog: Blog = {
-        //     id: uuidv4(),
-        //     name,
-        //     description,
-        //     websiteUrl,
-        //     createdAt: new Date().toISOString(),
-        //     isMembership: false
-        // }
-
         const blog = await this.blogRepository.createBlogInDb(newBlog)
 
         if (!blog) {
@@ -37,5 +29,13 @@ export class BlogService {
         }
 
         return BlogOutputModelMapper(blog)
+    }
+
+    async changeBlogByIdService ({id ,name, description, websiteUrl} : ChangeBlogByIdTypes) {
+        return await this.blogRepository.changeBlogByIdInDb({id ,name, description, websiteUrl})
+    }
+
+    async deleteBlogByIdService(id: string) {
+        return await this.blogRepository.deleteBlogById(id)
     }
 }

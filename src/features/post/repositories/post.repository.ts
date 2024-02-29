@@ -44,7 +44,7 @@ export class PostRepository {
                 items: posts
             }
 
-            return {}
+            return postsWithPagination
         } catch (e) {
             throw new Error('Posts was not get')
         }
@@ -67,58 +67,4 @@ export class PostRepository {
 
     }
 
-    // private async _mapPosts (posts: AllPostWithPagination, userId: string) {
-    //     const mappedItems = await Promise.all(posts.items.map(async (item) => {
-    //         let status: likeStatusType | undefined
-    //
-    //         if (userId) {
-    //             const likeForCurrentComment = await likeMutation.getLike(userId, item.id);
-    //             status = likeForCurrentComment?.type
-    //         }
-    //
-    //
-    //         const allLikesAndDislikesForCurrentComment = await likeMutation.getAllLikesAndDislikesForComment(item.id);
-    //         const likes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Like");
-    //         const dislikes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Dislike");
-    //
-    //
-    //         const likesFromDb = await LikeModel
-    //             .find({type: 'Like', targetId: item.id,})
-    //             .sort({['addedAt']: -1})
-    //             .limit(3)
-    //             .lean()
-    //
-    //         const newestLikes = likesFromDb.map(item => {
-    //             return {
-    //                 addedAt: item.addedAt,
-    //                 userId: item.userId,
-    //                 login: item.login
-    //             }
-    //         })
-    //
-    //         return {
-    //             id: item.id,
-    //             title: item.title,
-    //             shortDescription: item.shortDescription,
-    //             content: item.content,
-    //             blogId: item.blogId,
-    //             blogName: item.blogName,
-    //             createdAt: item.createdAt,
-    //             extendedLikesInfo: {
-    //                 likesCount: likes.length ?? 0,
-    //                 dislikesCount: dislikes.length ?? 0,
-    //                 myStatus: status ?? "None",
-    //                 newestLikes : newestLikes
-    //             }
-    //         };
-    //     }));
-    //
-    //     return {
-    //         pagesCount: posts.pagesCount,
-    //         page: posts.page,
-    //         pageSize: posts.pageSize,
-    //         totalCount: posts.totalCount,
-    //         items: mappedItems
-    //     };
-    // }
 }
