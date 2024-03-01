@@ -7,6 +7,7 @@ import {PostRepository} from "../repositories/post.repository";
 import {PostOutputModelMapper} from "../controller/models/post.output.model";
 import {AllPostWithPagination, QueryPostInputModel} from "../../../common/types/common.types";
 import {LikeRepository} from "../../likes/repositories/like.repository";
+import {CreatePostsServiceType} from "../../comment/types/comments.type";
 
 
 @Injectable()
@@ -24,7 +25,6 @@ export class PostService {
         if (!blog) {
             return null
         }
-
 
         const newPost = Posts.create(
             uuidv4(),
@@ -46,6 +46,10 @@ export class PostService {
 
     }
 
+    async changePostByIdService ({id, title, shortDescription, content, blogId}: CreatePostsServiceType ) {
+        return await this.postRepository.changePostById({id, title, shortDescription, content, blogId})
+    }
+
     async getAllPosts (sortData: QueryPostInputModel, userId: string = '', blogId: null | string = null) {
         const posts: AllPostWithPagination = await this.postRepository.getAllPosts(sortData, userId, blogId)
 
@@ -53,6 +57,9 @@ export class PostService {
 
     }
 
+    async deletePostById (id: string) {
+        return await this.postRepository.deletePostById(id)
+    }
 
     private async _mapPosts (posts: AllPostWithPagination, userId: string) {
         const mappedItems = await Promise.all(posts.items.map(async (item) => {

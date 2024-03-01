@@ -23,6 +23,13 @@ export class PostOutputModel {
     }
 }
 
+export class PostOutputModelWithPagination {
+    pagesCount?: number
+    page?: number
+    pageSize?: number
+    totalCount?: number
+    items: PostOutputModel []
+}
 
 
 export const PostOutputModelMapper = (post: PostDocument): PostOutputModel => {

@@ -78,7 +78,6 @@ export class BlogController {
             shortDescription: createPostInBlogDto.shortDescription,
             content: createPostInBlogDto.content,
             blogId: blogId
-
         })
 
         if (!post) {

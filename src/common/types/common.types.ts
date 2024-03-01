@@ -18,9 +18,11 @@ export type QueryPostInputModel = {
 }
 
 export type AllPostWithPagination = {
-    pagesCount: number,
-    page: number,
-    pageSize: number,
-    totalCount: number,
+    pagesCount?: number,
+    page?: number,
+    pageSize?: number,
+    totalCount?: number,
     items: Posts[]
 }
+
+export type likeStatusType = "Like" | "Dislike" | "None"
