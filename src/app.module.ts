@@ -7,11 +7,12 @@ import {LikeModule} from "./features/likes/like.module";
 import {CommentModule} from "./features/comment/comment.module";
 import {TestingAllDataModule} from "./features/testing-all-data/testing-all-data.module";
 import {UserModule} from "./features/user/user.module";
-
+// import {ConfigModule} from '@nestjs/config'
 
 
 @Module({
   imports: [
+      // ConfigModule.forRoot(),
     MongooseModule.forRoot(appSettings.api.MONGO_URL),
     forwardRef(() => BlogModule),
     forwardRef(() => PostModule),
