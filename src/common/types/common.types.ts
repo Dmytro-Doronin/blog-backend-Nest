@@ -6,15 +6,15 @@ export type QueryBlogInputModel = {
     searchNameTerm? : string
     sortBy?: string
     sortDirection?: SortDirection
-    pageNumber?: number
-    pageSize?: number
+    pageNumber?: string
+    pageSize?: string
 }
 
 export type QueryPostInputModel = {
     sortBy?: string
     sortDirection?: SortDirection
-    pageNumber?: number
-    pageSize?: number
+    pageNumber?: string
+    pageSize?: string
 }
 
 export type AllPostWithPagination = {
@@ -23,6 +23,15 @@ export type AllPostWithPagination = {
     pageSize?: number,
     totalCount?: number,
     items: Posts[]
+}
+
+export type QueryUserInputModel = {
+    sortBy?: string
+    sortDirection?: SortDirection
+    pageNumber?: string
+    pageSize?: string
+    searchLoginTerm?: string
+    searchEmailTerm?: string
 }
 
 export type likeStatusType = "Like" | "Dislike" | "None"

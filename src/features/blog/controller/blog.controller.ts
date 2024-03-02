@@ -15,8 +15,6 @@ import {BlogQueryRepository} from "../repositories/blog.query-repository";
 import {BlogService} from "../services/blog.service";
 import {CreateBolgDto, CreatePostInBolgDto} from "./models/create-blog.dto";
 import {PostService} from "../../post/services/post.service";
-import {PostOutputModelMapper} from "../../post/controller/models/post.output.model";
-import {QueryModelWithTerm} from "../../../common/models/query.models";
 import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/common.types";
 
 @Controller('/blogs')
@@ -36,8 +34,8 @@ export class BlogController {
         @Query('searchNameTerm') searchNameTerm: string,
         @Query('sortBy') sortBy: string,
         @Query('sortDirection') sortDirection: "asc" | "desc",
-        @Query('pageNumber', NumberPipes) pageNumber: number,
-        @Query('pageSize', NumberPipes) pageSize: number,
+        @Query('pageNumber') pageNumber: string,
+        @Query('pageSize') pageSize: string,
     ) {
 
 
@@ -91,10 +89,12 @@ export class BlogController {
     async getAllPostInBlogController (
         @Query('sortBy') sortBy: string,
         @Query('sortDirection') sortDirection: "asc" | "desc",
-        @Query('pageNumber', NumberPipes) pageNumber: number,
-        @Query('pageSize', NumberPipes) pageSize: number,
+        @Query('pageNumber') pageNumber: string,
+        @Query('pageSize') pageSize: string,
         @Param('id') blogId: string,
     ) {
+
+        const userId: string = ''
 
         const sortData: QueryPostInputModel = {
             sortBy: sortBy,
@@ -109,7 +109,7 @@ export class BlogController {
             throw new NotFoundException('Post not found')
         }
 
-        return await this.postService.getAllPosts(sortData)
+        return await this.postService.getAllPosts(sortData,userId, blogId)
 
     }
 

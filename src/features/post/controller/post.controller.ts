@@ -37,8 +37,8 @@ export class PostController {
     async getAllCommentsForPost (
         @Query('sortBy') sortBy: string,
         @Query('sortDirection') sortDirection: "asc" | "desc",
-        @Query('pageNumber', NumberPipes) pageNumber: number,
-        @Query('pageSize', NumberPipes) pageSize: number,
+        @Query('pageNumber') pageNumber: string,
+        @Query('pageSize') pageSize: string,
         @Param('id') postId: string
     ) {
         const userId = '' //need to add
@@ -65,8 +65,8 @@ export class PostController {
     async getAllPost(
         @Query('sortBy') sortBy: string,
         @Query('sortDirection') sortDirection: "asc" | "desc",
-        @Query('pageNumber', NumberPipes) pageNumber: number,
-        @Query('pageSize', NumberPipes) pageSize: number,
+        @Query('pageNumber') pageNumber: string,
+        @Query('pageSize') pageSize: string,
     ) {
         const userId = '' //need to add
 
