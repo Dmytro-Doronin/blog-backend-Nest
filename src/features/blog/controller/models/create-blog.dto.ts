@@ -16,7 +16,7 @@ export class CreateBolgDto {
     @Trim()
     @IsString()
     @Length(1, 100)
-    @IsUrl({}, { message: 'Неверный формат URL' })
+    @IsUrl({}, { message: 'Wrong URL format' })
     readonly websiteUrl: string
 }
 
