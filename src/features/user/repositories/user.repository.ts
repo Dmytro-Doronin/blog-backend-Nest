@@ -2,6 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {User} from "../domain/user.entity";
 import {Model} from "mongoose";
+import {UserServiceMapper} from "../controller/models/user.output-model";
 
 @Injectable()
 export class UserRepository {
@@ -33,6 +34,16 @@ export class UserRepository {
         } catch (e) {
             throw new Error('User was not deleted')
         }
+    }
+
+    async findUserByLoginOrEmail (loginOrEmail: string) {
+        try {
+            return  await this.UserModel.findOne({$or: [{'accountData.email':loginOrEmail },{'accountData.login': loginOrEmail}]})
+
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+
     }
 
 }

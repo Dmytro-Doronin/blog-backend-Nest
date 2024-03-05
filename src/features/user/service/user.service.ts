@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import {User} from "../domain/user.entity";
 import {UserRepository} from "../repositories/user.repository";
-import {UserOutputMapper} from "../controller/models/user.output-model";
+import {UserOutputMapper, UserServiceMapper} from "../controller/models/user.output-model";
 
 
 @Injectable()
@@ -32,6 +32,17 @@ export class UserService {
         }
 
         return UserOutputMapper(user)
+
+    }
+
+    async checkAuthCredentials (loginOrEmail: string) {
+        const user =  await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
+
+        if (!user) {
+            return null
+        }
+
+        return UserServiceMapper(user)
 
     }
 

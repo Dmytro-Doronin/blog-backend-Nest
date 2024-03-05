@@ -11,6 +11,6 @@ import {UserQueryRepository} from "./repositories/user.query-repository";
     imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}])],
     controllers: [UserController],
     providers: [UserRepository, UserService, UserQueryRepository],
-    exports: [],
+    exports: [UserRepository, UserService],
 })
 export class UserModule {}

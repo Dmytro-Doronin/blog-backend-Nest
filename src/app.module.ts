@@ -7,6 +7,8 @@ import {LikeModule} from "./features/likes/like.module";
 import {CommentModule} from "./features/comment/comment.module";
 import {TestingAllDataModule} from "./features/testing-all-data/testing-all-data.module";
 import {UserModule} from "./features/user/user.module";
+import {AuthModule} from "./features/auth/auth.module";
+import {DeviceModule} from "./features/device/device.module";
 // import {ConfigModule} from '@nestjs/config'
 
 
@@ -19,7 +21,9 @@ import {UserModule} from "./features/user/user.module";
     LikeModule,
     CommentModule,
     TestingAllDataModule,
-    UserModule
+    UserModule,
+    AuthModule,
+    DeviceModule
   ],
   controllers: [],
   providers: [],

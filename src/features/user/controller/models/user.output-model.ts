@@ -8,6 +8,14 @@ export class UserOutputModel {
     createdAt: string
 }
 
+export class UserServiceModel {
+    id: string
+    login: string
+    email: string
+    passwordSalt: string
+    passwordHash: string
+    createdAt: string
+}
 
 export class UserOutputModelWithPagination {
     pagesCount: number
@@ -26,4 +34,17 @@ export const UserOutputMapper = (user: UserDocument): UserOutputModel => {
     userOutputModel.createdAt = user.createdAt
 
     return userOutputModel
+}
+
+export const UserServiceMapper = (user: UserDocument): UserServiceModel => {
+    const userServiceModel = new UserServiceModel()
+
+    userServiceModel.id = user.id
+    userServiceModel.login = user.login
+    userServiceModel.email = user.email
+    userServiceModel.passwordSalt = user.passwordSalt
+    userServiceModel.passwordHash = user.passwordHash
+    userServiceModel.createdAt = user.createdAt
+
+    return userServiceModel
 }
