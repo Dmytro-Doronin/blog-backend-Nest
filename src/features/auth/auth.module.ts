@@ -9,6 +9,8 @@ import {UserService} from "../user/service/user.service";
 import {JwtModule, JwtService} from "@nestjs/jwt";
 import {jwtConstants} from "../../common/constants/jwt-constants";
 import {AuthController} from "./controller/auth.controller";
+import {DeviceModule} from "../device/device.module";
+import {MailManager} from "../../common/manager/mail/mail-manager";
 
 
 @Module({
@@ -19,9 +21,11 @@ import {AuthController} from "./controller/auth.controller";
             secret: jwtConstants.secret,
             signOptions: { expiresIn: '1h' },
         }),
+        DeviceModule
+
     ],
     controllers: [AuthController],
-    providers: [LocalStrategy, AuthService, JwtService],
+    providers: [LocalStrategy, AuthService, MailManager],
     exports: [AuthService],
 })
 export class AuthModule {}

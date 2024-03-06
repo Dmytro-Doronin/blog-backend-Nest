@@ -57,4 +57,21 @@ export class UserQueryRepository {
     }
 
 
+    async getUserByConfirmationCode (code: string)  {
+
+        try {
+            const user = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code}).lean()
+            if (!user) {
+                return null
+            }
+            return user
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+    }
+
+    async findUserByLoginOrEmail (loginOrEmail: string) {
+        const user = await this.UserModel.findOne({$or: [{'accountData.email':loginOrEmail },{'accountData.login': loginOrEmail}]}).lean()
+        return user
+    }
 }

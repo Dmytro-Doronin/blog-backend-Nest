@@ -29,9 +29,9 @@ export const UserOutputMapper = (user: UserDocument): UserOutputModel => {
     const userOutputModel = new UserOutputModel()
 
     userOutputModel.id = user.id
-    userOutputModel.login = user.login
-    userOutputModel.email = user.email
-    userOutputModel.createdAt = user.createdAt
+    userOutputModel.login = user.accountData.login
+    userOutputModel.email = user.accountData.email
+    userOutputModel.createdAt = user.accountData.createdAt
 
     return userOutputModel
 }
@@ -40,11 +40,11 @@ export const UserServiceMapper = (user: UserDocument): UserServiceModel => {
     const userServiceModel = new UserServiceModel()
 
     userServiceModel.id = user.id
-    userServiceModel.login = user.login
-    userServiceModel.email = user.email
-    userServiceModel.passwordSalt = user.passwordSalt
-    userServiceModel.passwordHash = user.passwordHash
-    userServiceModel.createdAt = user.createdAt
+    userServiceModel.login = user.accountData.login
+    userServiceModel.email = user.accountData.email
+    userServiceModel.passwordSalt = user.accountData.passwordSalt
+    userServiceModel.passwordHash = user.accountData.passwordHash
+    userServiceModel.createdAt = user.accountData.createdAt
 
     return userServiceModel
 }

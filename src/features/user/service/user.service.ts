@@ -5,12 +5,16 @@ import { v4 as uuidv4 } from 'uuid';
 import {User} from "../domain/user.entity";
 import {UserRepository} from "../repositories/user.repository";
 import {UserOutputMapper, UserServiceMapper} from "../controller/models/user.output-model";
-
+import {add} from "date-fns";
+import {MailManager} from "../../../common/manager/mail/mail-manager";
 
 @Injectable()
 export class UserService {
 
-    constructor(private userRepository: UserRepository) {}
+    constructor(
+        private userRepository: UserRepository,
+        private mailManager: MailManager
+    ) {}
 
     async createUser({login, password, email}: CreateUserDto) {
         const passwordSalt =  await bcrypt.genSalt(10)
@@ -18,11 +22,22 @@ export class UserService {
 
         const newUser = User.create(
             uuidv4(),
-            login,
-            email,
-            passwordHash,
-            passwordSalt,
-            new Date().toISOString()
+            {
+                login: login,
+                email,
+                passwordHash,
+                passwordSalt,
+                createdAt: new Date().toISOString()
+            },
+            {
+                confirmationCode: uuidv4(),
+                    expirationDate: add(new Date, {minutes: 3}),
+                    isConfirmed: false
+            },
+            {
+            passwordRecoveryCode: uuidv4(),
+                expirationDate: add(new Date, {minutes: 3}),
+            }
         )
 
         const user = await this.userRepository.createUser(newUser)
@@ -30,6 +45,8 @@ export class UserService {
         if (!user) {
             return null
         }
+
+        await this.mailManager.sendConfirmationMail(newUser.accountData.login, newUser.accountData.email, newUser.emailConfirmation.confirmationCode)
 
         return UserOutputMapper(user)
 
@@ -48,6 +65,14 @@ export class UserService {
 
     async deleteUserById (userId: string) {
         return await this.userRepository.deleteUser(userId)
+    }
+
+    async updateConfirmation (userId: string ) {
+        return await this.userRepository.updateConfirmation(userId)
+    }
+
+    async updateConfirmationCode (id: string, code: string, date: Date) {
+        return await this.userRepository.updateConfirmationCode(id, code, date)
     }
 
     async _generateHash(password: string, salt: string) {

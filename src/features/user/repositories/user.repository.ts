@@ -38,12 +38,38 @@ export class UserRepository {
 
     async findUserByLoginOrEmail (loginOrEmail: string) {
         try {
-            return  await this.UserModel.findOne({$or: [{'accountData.email':loginOrEmail },{'accountData.login': loginOrEmail}]})
+            return await this.UserModel.findOne({$or: [{'accountData.email':loginOrEmail },{'accountData.login': loginOrEmail}]})
 
         } catch (e) {
             throw new Error('User was not found')
         }
 
+    }
+
+    async updateConfirmation (id: string) {
+
+        try {
+            const result = await this.UserModel.updateOne({id}, {$set: {"emailConfirmation.isConfirmed": true}})
+            return result.modifiedCount === 1
+        } catch (e) {
+            throw new Error('Confirmation was not changed')
+        }
+
+    }
+
+    async updateConfirmationCode (id: string, code: string, date: Date) {
+        try {
+            const result = await this.UserModel.updateOne(
+                {id},
+                {$set: {
+                        "emailConfirmation.confirmationCode": code,
+                        "emailConfirmation.expirationDate": date
+                    }})
+
+            return result.modifiedCount === 1
+        } catch (e) {
+            throw new Error('Confirmation was not changed')
+        }
     }
 
 }
