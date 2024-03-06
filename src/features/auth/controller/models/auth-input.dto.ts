@@ -28,10 +28,22 @@ export class ConfirmationInputDto {
     readonly code: string
 }
 
-export class EmailResendingDto {
+export class EmailDto {
     @Trim()
     @IsString()
     @Length(1, 100)
     @IsEmail()
     readonly email: string
+}
+
+export class NewPasswordDto {
+    @Trim()
+    @IsString()
+    @Length(6, 20)
+    readonly newPassword: string;
+
+    @Trim()
+    @IsString()
+    @Length(1, 100)
+    readonly recoveryCode: string
 }

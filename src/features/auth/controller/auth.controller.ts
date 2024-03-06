@@ -13,7 +13,7 @@ import {
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../service/auth.service";
 import { Response } from 'express';
-import {AuthInputDto, ConfirmationInputDto, EmailResendingDto} from "./models/auth-input.dto";
+import {AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
 import {DeviceService} from "../../device/service/device.service";
 @Controller('/auth')
 export class AuthController {
@@ -72,7 +72,7 @@ export class AuthController {
 
     @HttpCode(204)
     @Post('/registration-email-resending')
-    async emailResending (@Body(new ValidationPipe()) emailResendingDto: EmailResendingDto) {
+    async emailResending (@Body(new ValidationPipe()) emailResendingDto: EmailDto) {
         const result = await this.authService.resendEmail(emailResendingDto.email)
 
         if (!result) {
@@ -81,5 +81,26 @@ export class AuthController {
 
     }
 
-    @Post()
+    @Post('/password-recovery')
+    async passwordRecovery (@Body(new ValidationPipe()) newPasswordDto: NewPasswordDto) {
+        const result = await this.authService.newPassword(newPasswordDto.recoveryCode, newPasswordDto.newPassword)
+
+        if(!result) {
+            throw new NotFoundException('Password was not changed')
+        }
+    }
+
+    @HttpCode(204)
+    @Post('/new-password')
+    async newPassword (@Body(new ValidationPipe()) passwordRecoveryDto: EmailDto) {
+        const result = await this.authService.recoveryPassword(passwordRecoveryDto.email)
+
+        if(!result) {
+            throw new NotFoundException('Password was not changed')
+        }
+    }
+
+
+
+
 }

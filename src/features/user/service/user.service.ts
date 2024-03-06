@@ -67,14 +67,6 @@ export class UserService {
         return await this.userRepository.deleteUser(userId)
     }
 
-    async updateConfirmation (userId: string ) {
-        return await this.userRepository.updateConfirmation(userId)
-    }
-
-    async updateConfirmationCode (id: string, code: string, date: Date) {
-        return await this.userRepository.updateConfirmationCode(id, code, date)
-    }
-
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     }

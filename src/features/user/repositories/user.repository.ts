@@ -72,4 +72,62 @@ export class UserRepository {
         }
     }
 
+    async getUserByConfirmationCode (code: string)  {
+
+        try {
+            const user = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code}).lean()
+            if (!user) {
+                return null
+            }
+            return user
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+    }
+
+    async getUserByPasswordRecoveryCode (code: string)  {
+
+        try {
+            const user = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code}).lean()
+            if (!user) {
+                return null
+            }
+            return user
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+    }
+
+    async updatePassword (passwordSalt: string, passwordHash: string, userId: string) {
+
+        try {
+
+            const result = await this.UserModel.updateOne(
+                {id: userId},
+                {$set: {
+                        "accountData.passwordHash": passwordHash,
+                        "accountData.passwordSalt": passwordSalt
+                    }})
+
+            return result.modifiedCount === 1
+        } catch (e) {
+            throw new Error('Confirmation was not changed')
+        }
+    }
+
+    async updatePasswordRecoveryCode(userId: string, code: string, date: Date) {
+        try {
+            const result = await this.UserModel.updateOne(
+                {id: userId},
+                {$set: {
+                        "passwordRecovery.passwordRecoveryCode": code,
+                        "passwordRecovery.expirationDate": date
+                    }})
+
+            return result.modifiedCount === 1
+        } catch (e) {
+            throw new Error('Confirmation was not changed')
+        }
+    }
+
 }

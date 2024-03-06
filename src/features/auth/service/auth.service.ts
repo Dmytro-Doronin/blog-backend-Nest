@@ -7,6 +7,7 @@ import {AuthInputDto} from "../controller/models/auth-input.dto";
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {add} from "date-fns";
 import {MailManager} from "../../../common/manager/mail/mail-manager";
+import {UserRepository} from "../../user/repositories/user.repository";
 const { v4: uuidv4 } = require('uuid');
 @Injectable()
 export class AuthService {
@@ -14,8 +15,8 @@ export class AuthService {
     constructor(
         private userService: UserService,
         private jwtService: JwtService,
-        private userQueryRepository: UserQueryRepository,
-        private mailManager: MailManager
+        private mailManager: MailManager,
+        private userRepository: UserRepository
 
     ) {}
 
@@ -54,7 +55,7 @@ export class AuthService {
     }
 
     async resendEmail (email: string) {
-        const user = await this.userQueryRepository.findUserByLoginOrEmail(email)
+        const user = await this.userRepository.findUserByLoginOrEmail(email)
 
         if (!user) {
             return null
@@ -69,7 +70,7 @@ export class AuthService {
             date: add(new Date, {minutes: 3})
         }
 
-        const updateConfirmation = await this.userService.updateConfirmationCode(user.id, newCode.code, newCode.date)
+        const updateConfirmation = await this.userRepository.updateConfirmationCode(user.id, newCode.code, newCode.date)
 
         if (!updateConfirmation) {
             return null
@@ -81,16 +82,53 @@ export class AuthService {
 
     async registrationConfirmation(code: string) {
 
-        const user = await this.userQueryRepository.getUserByConfirmationCode(code)
+        const user = await this.userRepository.getUserByConfirmationCode(code)
 
         if (!user) {
             return null
         }
         if (user.emailConfirmation.confirmationCode === code && user.emailConfirmation.expirationDate > new Date()) {
-            return await this.userService.updateConfirmation(user.id)
+            return await this.userRepository.updateConfirmation(user.id)
         }
 
         return null
+    }
+
+    async newPassword (recoveryCode: string, newPassword: string) {
+
+        const user = await this.userRepository.getUserByPasswordRecoveryCode(recoveryCode)
+
+        if (!user) {
+            return null
+        }
+
+        const passwordSalt =  await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+
+        return await this.userRepository.updatePassword(passwordSalt, passwordHash, user.id)
+    }
+
+    async recoveryPassword (email: string) {
+
+        const user = await this.userRepository.findUserByLoginOrEmail(email)
+
+        if (!user) {
+            return null
+        }
+
+        const data = {
+            code: uuidv4(),
+            date: add(new Date, {minutes: 3})
+        }
+
+        const updateRecoveryCode = await this.userRepository.updatePasswordRecoveryCode(user.id, data.code, data.date)
+
+        if (!updateRecoveryCode) {
+            return null
+        }
+
+        return await this.mailManager.sendRecoveryPasswordMail(user.accountData.login, user.accountData.email, data.code)
+
     }
 
     async _generateHash(password: string, salt: string) {
