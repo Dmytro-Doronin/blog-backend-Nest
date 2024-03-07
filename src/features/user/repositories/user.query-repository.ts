@@ -56,5 +56,17 @@ export class UserQueryRepository {
         }
     }
 
+    async getUserById (userId: string) {
+        try {
+            const user = await this.UserModel.findOne({id: userId})
+
+            if(!user) {
+                return null
+            }
+            return UserOutputMapper(user)
+        } catch (e) {
+            throw new Error('Does not get user')
+        }
+    }
 
 }

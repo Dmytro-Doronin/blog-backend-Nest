@@ -47,3 +47,10 @@ export class NewPasswordDto {
     @Length(1, 100)
     readonly recoveryCode: string
 }
+
+export class AccessTokenDto {
+    @Trim()
+    @IsString()
+    @Length(1)
+    readonly accessToken: string
+}

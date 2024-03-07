@@ -1,22 +1,22 @@
 import {Injectable} from "@nestjs/common";
 import {UserService} from "../../user/service/user.service";
 import bcrypt from "bcryptjs";
-import {JwtService} from "@nestjs/jwt";
-import {UserServiceModel} from "../../user/controller/models/user.output-model";
+import {UserOutputModel, UserServiceModel} from "../../user/controller/models/user.output-model";
 import {AuthInputDto} from "../controller/models/auth-input.dto";
-import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {add} from "date-fns";
 import {MailManager} from "../../../common/manager/mail/mail-manager";
 import {UserRepository} from "../../user/repositories/user.repository";
+import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 const { v4: uuidv4 } = require('uuid');
 @Injectable()
 export class AuthService {
 
     constructor(
         private userService: UserService,
-        private jwtService: JwtService,
+        private jwtService: CustomJwtService,
         private mailManager: MailManager,
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        // private createJwtService: CreateJwtService
 
     ) {}
 
@@ -35,20 +35,25 @@ export class AuthService {
 
     }
 
-    async login(user: UserServiceModel) {
-        const currentDate = new Date()
-        const accessTokenPayload = { sub: user.id };
-        const refreshTokenPayload = {
-            sub: user.id,
-            lastActiveDate: currentDate,
-            expireDate: new Date(currentDate.getTime() + 20 * 1000),
-            deviceId: uuidv4()
-        };
+    async createJWT(user: UserOutputModel | UserServiceModel) {
+
+        const {refreshToken, accessToken} = await this.jwtService.createJWT(user)
+        // const currentDate = new Date()
+        // const accessTokenPayload = { sub: user.id };
+        // const refreshTokenPayload = {
+        //     sub: user.id,
+        //     lastActiveDate: currentDate,
+        //     expireDate: new Date(currentDate.getTime() + 20 * 1000),
+        //     deviceId: uuidv4()
+        // };
         return {
-            accessToken: this.jwtService.sign(accessTokenPayload),
-            refreshToken: this.jwtService.sign(refreshTokenPayload),
+            accessToken,
+            refreshToken
         };
+
+
     }
+
 
     async registration ({login, password, email}: AuthInputDto) {
         return await this.userService.createUser({login, password, email})

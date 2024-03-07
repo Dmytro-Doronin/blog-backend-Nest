@@ -9,12 +9,12 @@ import {TestingAllDataModule} from "./features/testing-all-data/testing-all-data
 import {UserModule} from "./features/user/user.module";
 import {AuthModule} from "./features/auth/auth.module";
 import {DeviceModule} from "./features/device/device.module";
-// import {ConfigModule} from '@nestjs/config'
+import {CustomJwtModule} from "./common/jwt-module/jwt.module";
+
 
 
 @Module({
   imports: [
-      // ConfigModule.forRoot(),
     MongooseModule.forRoot(appSettings.api.MONGO_URL),
     forwardRef(() => BlogModule),
     forwardRef(() => PostModule),
@@ -23,7 +23,8 @@ import {DeviceModule} from "./features/device/device.module";
     TestingAllDataModule,
     UserModule,
     AuthModule,
-    DeviceModule
+    DeviceModule,
+    CustomJwtModule
   ],
   controllers: [],
   providers: [],

@@ -8,18 +8,24 @@ import {
     Body,
     ValidationPipe,
     HttpCode,
-    NotFoundException
+    NotFoundException, Get
 } from '@nestjs/common';
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../service/auth.service";
 import { Response } from 'express';
-import {AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
+import {AccessTokenDto, AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
 import {DeviceService} from "../../device/service/device.service";
+import {VerifyRefreshTokenGuard} from "../../../common/guards/verify-token.guard";
+import {UserQueryRepository} from "../../user/repositories/user.query-repository";
+import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
+import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 @Controller('/auth')
 export class AuthController {
     constructor(
         private authService: AuthService,
-        private deviceService: DeviceService
+        private deviceService: DeviceService,
+        private userQueryRepository: UserQueryRepository,
+        private customJwtService: CustomJwtService
     ) {}
 
     @UseGuards(LocalAuthGuard)
@@ -40,7 +46,7 @@ export class AuthController {
         }
 
 
-        const { accessToken, refreshToken } = await this.authService.login(user)
+        const { accessToken, refreshToken } = await this.authService.createJWT(user)
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
@@ -101,6 +107,43 @@ export class AuthController {
     }
 
 
+    @UseGuards(VerifyRefreshTokenGuard)
+    @Post('/refresh-token')
+    async refreshToken (
+        @Request() req,
+        @Res() res: Response,
+        @Body(new ValidationPipe()) accessTokenDto) {
 
+        const userId = req.userId;
+        const deviceId = req.deviceId
+
+        const user = await this.userQueryRepository.getUserById(userId)
+
+        const {refreshToken, accessToken} = await this.customJwtService.createJWT(user, deviceId)
+
+        const result = await this.deviceService.changeDevicesData(refreshToken)
+
+        if (!result) {
+            throw new NotFoundException('Device data was not changed')
+        }
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+        res.send({ accessToken });
+    }
+
+    @UseGuards(VerifyRefreshTokenGuard)
+    @Post('/logout')
+    async logout (
+        @Request() req,
+        @Res() res: Response,
+    ) {
+        const deviceId = req.deviceId
+
+        await this.deviceService.deleteDevice(deviceId)
+
+        res.sendStatus(204)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('')
 
 }
