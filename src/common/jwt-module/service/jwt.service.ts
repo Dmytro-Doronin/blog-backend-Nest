@@ -27,4 +27,14 @@ export class CustomJwtService {
         const decodedToken = this.jwtService.verify(refreshToken);
         return decodedToken
     }
+
+    async getUserIdByToken (token: string) {
+
+        try {
+            const result: any = this.jwtService.verify(token)
+            return result.userId
+        } catch (e) {
+            return false
+        }
+    }
 }

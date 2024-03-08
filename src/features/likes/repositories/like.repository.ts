@@ -10,19 +10,28 @@ export class LikeRepository {
 
     async getLike (userId: string, targetId: string) {
         try {
-            return await this.LikeModel.findOne({userId: userId ,targetId: targetId}).lean()
+            return await this.LikeModel.findOne({userId: userId ,targetId: targetId})
 
         } catch (e) {
             throw new Error('Can not get like or dislike')
         }
     }
 
+    // async getAllLikesAndDislikesForCurrentComment (targetId: string) {
+    //     try {
+    //         return await this.LikeModel.find({targetId: targetId}).lean()
+    //
+    //     } catch (e) {
+    //         throw new Error('Can not get All Likes And Dislikes')
+    //     }
+    // }
+
     async getAllLikesAndDislikesForTarget(targetId: string) {
         try {
             return await this.LikeModel.find({targetId: targetId}).lean()
 
         } catch (e) {
-            throw new Error('Can not get likes or dislikes for comment')
+            throw new Error('Can not get likes or dislikes for target')
         }
     }
 

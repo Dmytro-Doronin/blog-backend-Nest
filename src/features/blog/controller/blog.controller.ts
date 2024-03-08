@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query,
+    Query, UseGuards,
     ValidationPipe
 } from "@nestjs/common";
 import {NumberPipes} from "../../../common/pipes/number.pipe";
@@ -16,6 +16,7 @@ import {BlogService} from "../services/blog.service";
 import {CreateBolgDto, CreatePostInBolgDto} from "./models/create-blog.dto";
 import {PostService} from "../../post/services/post.service";
 import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/common.types";
+import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 
 @Controller('/blogs')
 export class BlogController {
@@ -53,7 +54,7 @@ export class BlogController {
 
     }
 
-
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createNewBlogController(@Body(new ValidationPipe()) createBlogDto: CreateBolgDto) {
 
@@ -67,6 +68,7 @@ export class BlogController {
 
     }
 
+    @UseGuards(BasicAuthGuard)
     @Post('/:id/posts')
     async createPostToBlogController (
         @Param('id') blogId: string,
@@ -126,6 +128,7 @@ export class BlogController {
 
     }
 
+    @UseGuards(BasicAuthGuard)
     @HttpCode(204)
     @Put('/:id')
     async putBlogByIdController (
@@ -146,6 +149,7 @@ export class BlogController {
 
     }
 
+    @UseGuards(BasicAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deleteBlogsByIdController (@Param('id') blogId: string,) {

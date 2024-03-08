@@ -11,27 +11,13 @@ export class CommentQueryRepository {
 
     constructor(
         @InjectModel(Comment.name) private CommentModel: Model<Comment>,
-        @InjectModel(Like.name) private LikeModel: Model<Like>
     ) {}
 
     async getCommentById (commentId: string, userId: string = '') {
         try {
-            const result = await this.CommentModel.findOne({id: commentId})
+            const result = await this.CommentModel.findOne({id: commentId}).lean()
 
-            if (!result) {
-                return null
-            }
-
-            let status: likeStatusType | undefined
-            if (userId) {
-                const like = await this.LikeModel.findOne({targetId: commentId, userId: userId }).lean()
-                status = like?.type
-            }
-            const allLikesAndDislikesForCurrentComment = await this.LikeModel.find({targetId: commentId}).lean();
-            const likes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Like");
-            const dislikes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Dislike");
-
-            return CommentOutputModelMapper(result, likes.length, dislikes.length, status )
+            return result
 
         } catch (e) {
             throw new Error('Comment was not found')

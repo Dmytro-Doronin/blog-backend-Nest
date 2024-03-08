@@ -2,7 +2,7 @@ import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
 
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
-import {CustomJwtService} from "../jwt-module/service/jwt.service";
+import {CustomJwtService} from "../service/jwt.service";
 
 @Injectable()
 export class VerifyRefreshTokenGuard implements CanActivate {

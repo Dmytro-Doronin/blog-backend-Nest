@@ -14,10 +14,39 @@ export class CommentService {
         private likeRepository: LikeRepository
     ) {}
 
+    async getCommentByIdService (commentId: string, userId: string = '') {
+        const comment = await this.commentRepository.getCommentById(commentId)
+
+        if (!comment) {
+            return null
+        }
+
+        let status: likeStatusType | undefined
+        if (userId) {
+            const like = await this.likeRepository.getLike(userId, commentId)
+            status = like?.type
+        }
+
+        const allLikesAndDislikesForCurrentComment = await this.likeRepository.getAllLikesAndDislikesForTarget(commentId)
+        const likes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Like");
+        const dislikes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Dislike");
+
+        return CommentOutputModelMapper(comment, likes.length, dislikes.length, status)
+    }
+
     async getAllCommentsForPostService (postId: string, sortData: QueryPostInputModel, userId: string = ''): Promise<CommentOutputModelWithPagination> {
         const comments: CommentsWithPaginationType = await this.commentRepository.getAllCommentForPostFromDb(postId, sortData)
 
         return this._mapCommentService(comments, userId)
+    }
+
+    async changeComment (commentId: string, content: string) {
+
+        return await this.commentRepository.changeCommentByIdInDb(commentId, content)
+    }
+
+    async deleteComment(commentId: string) {
+        return await this.commentRepository.deleteCommentById(commentId)
     }
 
     private async _mapCommentService (comments: CommentsWithPaginationType, userId: string): Promise<CommentOutputModelWithPagination> {

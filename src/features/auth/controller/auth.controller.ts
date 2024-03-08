@@ -15,7 +15,7 @@ import {AuthService} from "../service/auth.service";
 import { Response } from 'express';
 import {AccessTokenDto, AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
 import {DeviceService} from "../../device/service/device.service";
-import {VerifyRefreshTokenGuard} from "../../../common/guards/verify-token.guard";
+import {VerifyRefreshTokenGuard} from "../../../common/jwt-module/guards/verify-token.guard";
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
@@ -144,6 +144,19 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('')
+    @Get('/me')
+    async me (
+        @Request() req,
+        @Res() res: Response,
+    ) {
+        const userId = req.userId
+        const user = await this.userQueryRepository.getUserById(userId)
+
+        if (!user) {
+            throw new NotFoundException('User was not found')
+        }
+
+        res.status(200).send({email: user.email, login: user.login, userId: userId})
+    }
 
 }

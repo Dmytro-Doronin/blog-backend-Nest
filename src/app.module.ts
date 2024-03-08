@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import {forwardRef, MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
 import {MongooseModule} from "@nestjs/mongoose";
 import {appSettings} from "./settings/app-settings";
 import {BlogModule} from "./features/blog/blog.module";
@@ -10,6 +10,7 @@ import {UserModule} from "./features/user/user.module";
 import {AuthModule} from "./features/auth/auth.module";
 import {DeviceModule} from "./features/device/device.module";
 import {CustomJwtModule} from "./common/jwt-module/jwt.module";
+import {CustomAuthMiddleware} from "./common/jwt-module/middleware/custom-auth.middleware";
 
 
 
@@ -29,4 +30,10 @@ import {CustomJwtModule} from "./common/jwt-module/jwt.module";
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+        .apply(CustomAuthMiddleware)
+        .forRoutes({ path: '/comments/:id', method: RequestMethod.GET });
+  }
+}

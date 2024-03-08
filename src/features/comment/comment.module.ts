@@ -12,7 +12,6 @@ import {CommentRepository} from "./repositories/comment.repository";
 @Module({
     imports: [
         MongooseModule.forFeature([{name: Comment.name, schema: CommentSchema}]),
-        MongooseModule.forFeature([{name: Like.name, schema: LikeSchema}]),
         LikeModule
     ],
     controllers: [CommentController],

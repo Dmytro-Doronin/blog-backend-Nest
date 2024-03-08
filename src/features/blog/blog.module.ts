@@ -7,11 +7,13 @@ import {BlogController} from "./controller/blog.controller";
 import {BlogService} from "./services/blog.service";
 import {BlogRepository} from "./repositories/blog.reposirory";
 import {PostModule} from "../post/post.module";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
         forwardRef(() => PostModule),
+        AuthModule
     ],
     controllers: [BlogController],
     providers: [BlogService, BlogQueryRepository, BlogRepository],

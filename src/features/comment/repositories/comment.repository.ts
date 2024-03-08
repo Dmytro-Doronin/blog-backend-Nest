@@ -10,6 +10,21 @@ export class CommentRepository {
 
     constructor(@InjectModel(Comment.name) private readonly CommentModel: Model<Comment> ) {}
 
+    async getCommentById (commentId: string) {
+        try {
+            const result = await this.CommentModel.findOne({id: commentId})
+
+            if (!result) {
+                return null
+            }
+
+            return result
+
+        } catch (e) {
+            throw new Error('Comment was not found')
+        }
+    }
+
     async getAllCommentForPostFromDb(postId: string, sortData: QueryPostInputModel) {
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection = sortData.sortDirection ?? 'desc'
@@ -41,5 +56,33 @@ export class CommentRepository {
         } catch (e) {
             throw new Error('Comments was not get')
         }
+    }
+
+    async changeCommentByIdInDb (id: string, newContent: string) {
+        try {
+            const result = await this.CommentModel.updateOne(
+                {id: id},
+                {
+                    $set: {content: newContent}
+                }
+            )
+
+            return result.modifiedCount === 1
+
+        } catch (e) {
+            throw new Error('Comment was not changed by id')
+        }
+
+    }
+
+    async deleteCommentById (id: string) {
+        try {
+            const result = await this.CommentModel.deleteOne({id: id})
+
+            return result.deletedCount === 1
+        } catch (e) {
+            throw new Error('Comment was not deleted by id')
+        }
+
     }
 }
