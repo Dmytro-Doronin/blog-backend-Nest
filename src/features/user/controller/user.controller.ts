@@ -55,6 +55,8 @@ export class UserController {
         return users
 
     }
+
+
     @UseGuards(BasicAuthGuard)
     @Post()
     async createUser (@Body(new ValidationPipe()) createUserDto: CreateUserDto) {

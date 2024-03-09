@@ -21,6 +21,7 @@ import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {UniqueEmailValidationPipe} from "../pipes/email-validation.pipe";
 import {UserRepository} from "../../user/repositories/user.repository";
+import {UserAlreadyExistsException} from "../exceptions/input-data.exceptions";
 @Controller('/auth')
 export class AuthController {
     constructor(
@@ -61,14 +62,19 @@ export class AuthController {
     @HttpCode(204)
     @Post('/registration')
     @UsePipes()
-    async registration (@Body(new ValidationPipe({
-        transformOptions: {
-            enableImplicitConversion: true,
-        },
-        // Добавьте ваш кастомный валидатор сюда
-        // @ts-ignore
-        customTransformers: [new UniqueEmailValidationPipe()],
-    })) authInputDto: AuthInputDto) {
+    async registration (@Body(new ValidationPipe()) authInputDto: AuthInputDto) {
+
+        const userEmail = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.email)
+
+        if (userEmail) {
+            throw new UserAlreadyExistsException('email')
+        }
+
+        const userLogin = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.login)
+
+        if (userLogin) {
+            throw new UserAlreadyExistsException('login')
+        }
 
         await this.authService.registration({
             login: authInputDto.login,

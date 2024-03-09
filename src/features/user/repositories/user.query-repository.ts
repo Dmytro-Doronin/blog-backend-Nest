@@ -12,6 +12,21 @@ export class UserQueryRepository {
     constructor(@InjectModel(User.name)  private UserModel: Model<User>) {}
 
 
+    async findUserByLoginOrEmail (loginOrEmail: string) {
+        try {
+            const user = await this.UserModel.findOne({$or: [{'accountData.email':loginOrEmail },{'accountData.login': loginOrEmail}]})
+
+            if (!user) {
+                return null
+            }
+
+            return UserOutputMapper(user)
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+
+    }
+
     async getAllUser (sortData: QueryUserInputModel) {
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection  = sortData.sortDirection ?? 'desc'
@@ -38,6 +53,7 @@ export class UserQueryRepository {
                 .sort(filterForSort(sortBy, sortDirection))
                 .skip((+pageNumber - 1) * +pageSize)
                 .limit(+pageSize)
+                .lean()
 
             const totalCount = await this.UserModel.countDocuments(filter)
             const pagesCount = Math.ceil(totalCount / +pageSize)
