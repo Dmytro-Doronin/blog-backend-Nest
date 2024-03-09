@@ -25,6 +25,24 @@ export class CommentRepository {
         }
     }
 
+    async createCommentForPostInDb (newComments: Comment) {
+
+        try {
+            await this.CommentModel.create(newComments)
+
+            const comment = await this.CommentModel.findOne({id: newComments.id})
+
+            if (!comment) {
+                return null
+            }
+
+            return comment
+
+        } catch (e) {
+            throw new Error('Comment was not created')
+        }
+    }
+
     async getAllCommentForPostFromDb(postId: string, sortData: QueryPostInputModel) {
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection = sortData.sortDirection ?? 'desc'

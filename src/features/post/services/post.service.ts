@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {Posts} from "../domain/post.entity";
 import {PostRepository} from "../repositories/post.repository";
 import {PostOutputModelMapper} from "../controller/models/post.output.model";
-import {AllPostWithPagination, QueryPostInputModel} from "../../../common/types/common.types";
+import {AllPostWithPagination, likeStatusType, QueryPostInputModel} from "../../../common/types/common.types";
 import {LikeRepository} from "../../likes/repositories/like.repository";
 import {CreatePostsServiceType} from "../../comment/types/comments.type";
 
@@ -18,6 +18,38 @@ export class PostService {
         private postRepository: PostRepository,
         private likeRepository: LikeRepository
     ) {}
+
+    async getPostById (postId: string, userId: string = '') {
+        const post = await this.postRepository.getPostById(postId)
+
+        if (!post) {
+            return null
+        }
+
+        let status: likeStatusType | undefined
+        if (userId) {
+            const like = await this.likeRepository.getLike(userId, postId)
+            status = like?.type
+        }
+
+        const allLikesAndDislikesForCurrentComment = await this.likeRepository.getAllLikesAndDislikesForTarget(postId)
+        const likes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Like");
+        const dislikes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Dislike")
+
+        const likesFromDb = await this.likeRepository.getSortedLikesForTarget(postId)
+
+
+        const newestLikes = likesFromDb.map(item => {
+            return {
+                addedAt: item.addedAt,
+                userId: item.userId,
+                login: item.login
+            }
+        })
+
+        return PostOutputModelMapper(post, likes.length, dislikes.length, status, newestLikes)
+
+    }
 
     async createPostService ({title, shortDescription, content, blogId}: CreatePostDto) {
         const blog = await this.blogRepository.getBlogByIdInDb(blogId)
@@ -77,6 +109,7 @@ export class PostService {
 
 
             const likesFromDb = await this.likeRepository.getSortedLikesForTarget(item.id)
+
 
             const newestLikes = likesFromDb.map(item => {
                 return {

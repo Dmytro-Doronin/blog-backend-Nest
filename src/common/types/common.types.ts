@@ -35,3 +35,5 @@ export type QueryUserInputModel = {
 }
 
 export type likeStatusType = "Like" | "Dislike" | "None"
+
+export type NewestLikeType = { addedAt: string; userId: string; login: string; }

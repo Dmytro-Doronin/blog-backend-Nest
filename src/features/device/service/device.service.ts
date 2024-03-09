@@ -1,5 +1,4 @@
 import {Injectable} from "@nestjs/common";
-import {JwtService} from "@nestjs/jwt";
 import {Device} from "../domain/device.entity";
 import {DeviceRepository} from "../repositories/device.repository";
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
@@ -38,5 +37,10 @@ export class DeviceService {
     async deleteDevice (deviceId: string) {
         return await this.deviceRepository.deleteDeviceByDeviceId(deviceId)
     }
+
+    async deleteAllDeviceExcludeCurrent (deviceId: string) {
+        return await this.deviceRepository.deleteAllDeviceExcludeCurrent(deviceId)
+    }
+
 
 }

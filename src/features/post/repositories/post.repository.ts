@@ -12,8 +12,21 @@ import {CreatePostsServiceType} from "../../comment/types/comments.type";
 export class PostRepository {
     constructor(
         @InjectModel(Posts.name) private PostModel: Model<Posts>,
-        @InjectModel(Comment.name) private CommentModel: Model<Comment>,
     ) {}
+
+    async getPostById (postId: string) {
+        try {
+            const post = await this.PostModel.findOne({id: postId})
+
+            if (!post) {
+                return null
+            }
+
+            return post
+        } catch (e) {
+            throw new Error('Post was not get')
+        }
+    }
 
     async getAllPosts (sortData: QueryPostInputModel, userId: string, blogId: null | string = null) {
         const sortBy = sortData.sortBy ?? 'createdAt'

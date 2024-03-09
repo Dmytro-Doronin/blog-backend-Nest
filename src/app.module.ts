@@ -34,6 +34,11 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
         .apply(CustomAuthMiddleware)
-        .forRoutes({ path: '/comments/:id', method: RequestMethod.GET });
+        .forRoutes(
+            { path: '/comments/:id', method: RequestMethod.GET },
+            { path: '/posts', method: RequestMethod.GET },
+            { path: '/posts/:id', method: RequestMethod.GET },
+            { path: '/posts/:id/comments', method: RequestMethod.GET },
+            );
   }
 }

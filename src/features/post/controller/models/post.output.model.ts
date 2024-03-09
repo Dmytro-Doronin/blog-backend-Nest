@@ -1,5 +1,6 @@
 
 import {PostDocument} from "../../domain/post.entity";
+import {likeStatusType, NewestLikeType} from "../../../../common/types/common.types";
 
 class newestLikes {
     addedAt: string
@@ -32,7 +33,13 @@ export class PostOutputModelWithPagination {
 }
 
 
-export const PostOutputModelMapper = (post: PostDocument): PostOutputModel => {
+export const PostOutputModelMapper = (
+    post: PostDocument,
+    likesCount = 0,
+    dislikesCount= 0,
+    myStatus: likeStatusType = "None",
+    newestLikes: NewestLikeType[] = []
+    ): PostOutputModel => {
     const outputModel = new PostOutputModel();
 
     outputModel.id = post.id;
@@ -43,10 +50,10 @@ export const PostOutputModelMapper = (post: PostDocument): PostOutputModel => {
     outputModel.blogName = post.blogName;
     outputModel.createdAt = post.createdAt;
     outputModel.extendedLikesInfo = {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
-        newestLikes : []
+        likesCount,
+        dislikesCount,
+        myStatus,
+        newestLikes
     }
 
 

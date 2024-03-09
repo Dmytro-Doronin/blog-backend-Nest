@@ -9,6 +9,17 @@ export class UserRepository {
 
     constructor(@InjectModel(User.name) private UserModel: Model<User>) {}
 
+    async getUserById (userId: string) {
+        try {
+            const res = await this.UserModel.findOne({id: userId}).lean()
+
+            return res
+
+        } catch (e) {
+            throw new Error('User was not found')
+        }
+    }
+
     async createUser(newUser: User){
         try {
             await this.UserModel.create(newUser)

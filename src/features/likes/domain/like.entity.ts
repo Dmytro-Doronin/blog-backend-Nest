@@ -20,14 +20,15 @@ export class Like {
     @Prop({ enum: ['Like', 'Dislike', 'None'], required: true })
     type: 'Like'| 'Dislike' | 'None'
 
-    static create(
-        id: string,
-        userId: string,
-        login: string,
-        targetId: string,
-        target: string,
-        addedAt: string,
-        type: 'Like'| 'Dislike' | 'None'
+    static create({
+      id,
+      userId,
+      login,
+      targetId,
+      target,
+      addedAt,
+      type
+    }: Like
     ) {
         const like = new Like()
         like.id = id

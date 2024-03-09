@@ -2,6 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {Like} from "../domain/like.entity";
+import {likeStatusType} from "../../../common/types/common.types";
 
 @Injectable()
 export class LikeRepository {
@@ -45,6 +46,40 @@ export class LikeRepository {
 
         } catch (e) {
             throw new Error('Can not get likes or dislikes for comment')
+        }
+    }
+
+    async createLike (likeData: Like) {
+        try {
+            await this.LikeModel.create(likeData)
+            const result = await this.LikeModel.findOne({id: likeData.id}).lean()
+
+            if (!result) {
+                return null
+            }
+
+            return result
+
+        } catch (e) {
+            throw new Error('Can not get like or dislike')
+        }
+    }
+
+    async updateLike(userId: string ,targetId: string, likeStatus: likeStatusType, target: string ) {
+
+        try {
+            const result = await this.LikeModel.updateOne(
+                {userId, targetId: targetId, target},
+                {
+                    $set: {type: likeStatus, addedAt: (new Date().toISOString())}
+                }
+            )
+            return result.modifiedCount === 1;
+
+
+
+        } catch (e) {
+            throw new Error('Can not get like ir dislike')
         }
     }
 

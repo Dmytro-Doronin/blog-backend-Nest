@@ -48,4 +48,18 @@ export class DeviceRepository {
             throw new Error('Can not delete device by deviceId')
         }
     }
+
+    async deleteAllDeviceExcludeCurrent (deviceId: string) {
+        try {
+
+            await this.DeviceModel.deleteMany({deviceId: {$ne: deviceId}})
+
+            const count = await this.DeviceModel.countDocuments({})
+
+            return count === 1;
+
+        } catch (e) {
+            throw new Error('Can not delete devices')
+        }
+    }
 }

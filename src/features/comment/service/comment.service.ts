@@ -4,7 +4,8 @@ import {CommentsWithPaginationType} from "../types/comments.type";
 import {CommentRepository} from "../repositories/comment.repository";
 import {LikeRepository} from "../../likes/repositories/like.repository";
 import {CommentOutputModelMapper, CommentOutputModelWithPagination} from "../controller/models/comment.output.model";
-
+import {Comment} from "../domain/comment.entity";
+const { v4: uuidv4 } = require('uuid');
 
 @Injectable()
 export class CommentService {
@@ -38,6 +39,25 @@ export class CommentService {
         const comments: CommentsWithPaginationType = await this.commentRepository.getAllCommentForPostFromDb(postId, sortData)
 
         return this._mapCommentService(comments, userId)
+    }
+
+    async createComment (postId: string, content: string, userId: string, userLogin: string) {
+
+        const newComment = Comment.create(
+            uuidv4(),
+            postId,
+            content,
+            {userId: userId, userLogin: userLogin},
+            (new Date().toISOString())
+        )
+
+        const comment = await this.commentRepository.createCommentForPostInDb(newComment)
+
+        if (!comment) {
+            return null
+        }
+
+        return CommentOutputModelMapper(comment)
     }
 
     async changeComment (commentId: string, content: string) {
