@@ -21,6 +21,7 @@ import {Response} from "express";
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {LikeService} from "../../likes/service/like.service";
 import {QueryLikeRepository} from "../../likes/repositories/query-like.repository";
+import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 
 @Controller('/posts')
 export class PostController {
@@ -68,7 +69,7 @@ export class PostController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createPost (
         @Body(new ValidationPipe()) createPostDto: CreatePostDto
@@ -106,7 +107,7 @@ export class PostController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(204)
     @Put('/:id')
     async changePostById (
@@ -133,7 +134,7 @@ export class PostController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deletePOstById (

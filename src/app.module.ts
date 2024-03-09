@@ -13,7 +13,6 @@ import {CustomJwtModule} from "./common/jwt-module/jwt.module";
 import {CustomAuthMiddleware} from "./common/jwt-module/middleware/custom-auth.middleware";
 
 
-
 @Module({
   imports: [
     MongooseModule.forRoot(appSettings.api.MONGO_URL),
@@ -38,7 +37,6 @@ export class AppModule implements NestModule {
             { path: '/comments/:id', method: RequestMethod.GET },
             { path: '/posts', method: RequestMethod.GET },
             { path: '/posts/:id', method: RequestMethod.GET },
-            { path: '/posts/:id/comments', method: RequestMethod.GET },
-            );
+            { path: '/posts/:id/comments', method: RequestMethod.GET })
   }
 }

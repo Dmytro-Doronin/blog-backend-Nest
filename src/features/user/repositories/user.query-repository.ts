@@ -11,6 +11,7 @@ export class UserQueryRepository {
 
     constructor(@InjectModel(User.name)  private UserModel: Model<User>) {}
 
+
     async getAllUser (sortData: QueryUserInputModel) {
         const sortBy = sortData.sortBy ?? 'createdAt'
         const sortDirection  = sortData.sortDirection ?? 'desc'
@@ -38,9 +39,7 @@ export class UserQueryRepository {
                 .skip((+pageNumber - 1) * +pageSize)
                 .limit(+pageSize)
 
-
             const totalCount = await this.UserModel.countDocuments(filter)
-            console.log(totalCount)
             const pagesCount = Math.ceil(totalCount / +pageSize)
 
             return {

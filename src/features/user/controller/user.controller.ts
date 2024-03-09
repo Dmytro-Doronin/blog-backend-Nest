@@ -7,7 +7,7 @@ import {
     NotFoundException,
     Param,
     Post,
-    Query,
+    Query, UseGuards,
     ValidationPipe
 } from "@nestjs/common";
 import {CreateUserDto} from "./models/create-user.dto";
@@ -16,6 +16,7 @@ import {NumberPipes} from "../../../common/pipes/number.pipe";
 import {QueryUserInputModel} from "../../../common/types/common.types";
 import {UserQueryRepository} from "../repositories/user.query-repository";
 import {UserOutputModelWithPagination} from "./models/user.output-model";
+import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 
 
 @Controller('/users')
@@ -30,6 +31,7 @@ export class UserController {
         this.userService = userService
     }
 
+    @UseGuards(BasicAuthGuard)
     @Get()
     async getAllUsers (
         @Query('sortBy') sortBy: string,
@@ -53,7 +55,7 @@ export class UserController {
         return users
 
     }
-
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createUser (@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
         const user = await this.userService.createUser({
@@ -69,6 +71,7 @@ export class UserController {
         return user
     }
 
+    @UseGuards(BasicAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deleteUserById (@Param('id') userId: string) {

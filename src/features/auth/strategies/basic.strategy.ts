@@ -9,7 +9,7 @@ export class BasicAuthStrategy extends PassportStrategy(BasicStrategy) {
     }
 
     validate(username: string, password: string): any {
-        const isValid = (username === 'user' && password === 'password');
+        const isValid = (username === 'admin' && password === 'qwerty');
 
         if (!isValid) {
             throw new UnauthorizedException('Invalid credentials');

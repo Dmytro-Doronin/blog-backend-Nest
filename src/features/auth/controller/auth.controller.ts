@@ -8,7 +8,7 @@ import {
     Body,
     ValidationPipe,
     HttpCode,
-    NotFoundException, Get
+    NotFoundException, Get, UsePipes
 } from '@nestjs/common';
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../service/auth.service";
@@ -19,13 +19,16 @@ import {VerifyRefreshTokenGuard} from "../../../common/jwt-module/guards/verify-
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
+import {UniqueEmailValidationPipe} from "../pipes/email-validation.pipe";
+import {UserRepository} from "../../user/repositories/user.repository";
 @Controller('/auth')
 export class AuthController {
     constructor(
         private authService: AuthService,
         private deviceService: DeviceService,
         private userQueryRepository: UserQueryRepository,
-        private customJwtService: CustomJwtService
+        private customJwtService: CustomJwtService,
+        private userRepository: UserRepository
     ) {}
 
     @UseGuards(LocalAuthGuard)
@@ -50,13 +53,22 @@ export class AuthController {
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-        res.send({ accessToken });
+        res.status(200).send({ accessToken });
 
     }
 
+
     @HttpCode(204)
     @Post('/registration')
-    async registration (@Body(new ValidationPipe()) authInputDto: AuthInputDto) {
+    @UsePipes()
+    async registration (@Body(new ValidationPipe({
+        transformOptions: {
+            enableImplicitConversion: true,
+        },
+        // Добавьте ваш кастомный валидатор сюда
+        // @ts-ignore
+        customTransformers: [new UniqueEmailValidationPipe()],
+    })) authInputDto: AuthInputDto) {
 
         await this.authService.registration({
             login: authInputDto.login,

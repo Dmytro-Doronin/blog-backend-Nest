@@ -6,6 +6,7 @@ import {UserRepository} from "./repositories/user.repository";
 import {UserService} from "./service/user.service";
 import {UserQueryRepository} from "./repositories/user.query-repository";
 import {MailManager} from "../../common/manager/mail/mail-manager";
+import {AuthModule} from "../auth/auth.module";
 
 
 @Module({
