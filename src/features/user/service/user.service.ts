@@ -40,6 +40,7 @@ export class UserService {
             }
         )
 
+
         const user = await this.userRepository.createUser(newUser)
 
         if (!user) {

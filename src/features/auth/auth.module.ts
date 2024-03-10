@@ -14,9 +14,6 @@ import {BasicAuthStrategy} from "./strategies/basic.strategy";
 import {BasicAuthGuard} from "./guards/basic-auth.guard";
 import {JwtAuthGuard} from "./guards/jwt-auth.guard";
 import {LocalAuthGuard} from "./guards/local-auth.guard";
-import {CustomAuthMiddleware} from "../../common/jwt-module/middleware/custom-auth.middleware";
-import {UniqueEmailValidationPipe} from "./pipes/email-validation.pipe";
-import {UserRepository} from "../user/repositories/user.repository";
 
 
 @Module({

@@ -34,6 +34,7 @@ export const UserOutputMapper = (user: UserDocument): UserOutputModel => {
     userOutputModel.createdAt = user.accountData.createdAt
 
     return userOutputModel
+
 }
 
 export const UserServiceMapper = (user: UserDocument): UserServiceModel => {

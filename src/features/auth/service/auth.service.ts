@@ -67,7 +67,7 @@ export class AuthService {
         }
 
         if (user.emailConfirmation.isConfirmed) {
-            return null
+            return false
         }
 
         const newCode = {
@@ -82,16 +82,16 @@ export class AuthService {
         }
 
         return await this.mailManager.sendConfirmationMail(user.accountData.login, user.accountData.email, newCode.code )
-
     }
 
     async registrationConfirmation(code: string) {
-
         const user = await this.userRepository.getUserByConfirmationCode(code)
 
         if (!user) {
             return null
         }
+
+
         if (user.emailConfirmation.confirmationCode === code && user.emailConfirmation.expirationDate > new Date()) {
             return await this.userRepository.updateConfirmation(user.id)
         }

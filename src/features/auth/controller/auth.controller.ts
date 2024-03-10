@@ -19,9 +19,7 @@ import {VerifyRefreshTokenGuard} from "../../../common/jwt-module/guards/verify-
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
-import {UniqueEmailValidationPipe} from "../pipes/email-validation.pipe";
 import {UserRepository} from "../../user/repositories/user.repository";
-import {UserAlreadyExistsException} from "../exceptions/input-data.exceptions";
 @Controller('/auth')
 export class AuthController {
     constructor(
@@ -54,26 +52,35 @@ export class AuthController {
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-        res.status(200).send({ accessToken });
+        return res.status(200).send({ accessToken });
 
     }
 
 
     @HttpCode(204)
     @Post('/registration')
-    @UsePipes()
-    async registration (@Body(new ValidationPipe()) authInputDto: AuthInputDto) {
+    async registration (
+        @Request() req,
+        @Res() res: Response,
+        @Body(new ValidationPipe()) authInputDto: AuthInputDto
+    ) {
 
         const userEmail = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.email)
 
         if (userEmail) {
-            throw new UserAlreadyExistsException('email')
+            // throw new UserAlreadyExistsException('email')
+           return res.status(400).json({
+                errorsMessages: [{ message: "User with this email already exists", field: "email" }]
+            })
         }
 
         const userLogin = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.login)
 
         if (userLogin) {
-            throw new UserAlreadyExistsException('login')
+            // throw new UserAlreadyExistsException('login')
+            return res.status(400).json({
+                errorsMessages: [{ message: "User with this email already exists", field: "login" }]
+            })
         }
 
         await this.authService.registration({
@@ -81,28 +88,66 @@ export class AuthController {
             password: authInputDto.password,
             email: authInputDto.email
         })
+
+        return res.sendStatus(204)
     }
 
     @HttpCode(204)
     @Post('/registration-confirmation')
-    async registrationConfirmation (@Body(new ValidationPipe()) confirmationInputDto: ConfirmationInputDto) {
+    async registrationConfirmation (
+        @Request() req,
+        @Res() res: Response,
+        @Body(new ValidationPipe()) confirmationInputDto: ConfirmationInputDto
+    ) {
+
+        const user = await this.userRepository.getUserByConfirmationCode(confirmationInputDto.code)
+
+        if (!user) {
+            return res.status(400).json({ errorsMessages: [{ message: 'code doesnt exist', field: "code" }] })
+        }
+
+        if (user.emailConfirmation.isConfirmed) {
+            return res.status(400).json({ errorsMessages: [{ message: 'Email already confirmed', field: "code" }] })
+        }
+
         const confirm= await this.authService.registrationConfirmation(confirmationInputDto.code)
+
 
         if (!confirm) {
             throw new NotFoundException('Account was not confirmed')
         }
 
+        return res.sendStatus(204)
     }
 
     @HttpCode(204)
     @Post('/registration-email-resending')
-    async emailResending (@Body(new ValidationPipe()) emailResendingDto: EmailDto) {
+    async emailResending (
+        @Request() req,
+        @Res() res: Response,
+        @Body(new ValidationPipe()) emailResendingDto: EmailDto
+    ) {
+        console.log(emailResendingDto.email)
+        const user = await this.userRepository.findUserByLoginOrEmail(emailResendingDto.email)
+
+        if (!user) {
+            return res.status(400).json({ errorsMessages: [{ message: 'Email doesnt exist', field: "email" }] })
+
+        }
+
+
+        if (user.emailConfirmation.isConfirmed) {
+            return res.status(400).json({ errorsMessages: [{ message: 'Email already confirmed', field: "email" }] })
+        }
+
+
         const result = await this.authService.resendEmail(emailResendingDto.email)
 
         if (!result) {
             throw new NotFoundException('Email was not sent')
         }
 
+        return res.sendStatus(204)
     }
 
     @Post('/password-recovery')

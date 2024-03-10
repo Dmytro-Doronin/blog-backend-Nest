@@ -53,7 +53,6 @@ export class UserQueryRepository {
                 .sort(filterForSort(sortBy, sortDirection))
                 .skip((+pageNumber - 1) * +pageSize)
                 .limit(+pageSize)
-                .lean()
 
             const totalCount = await this.UserModel.countDocuments(filter)
             const pagesCount = Math.ceil(totalCount / +pageSize)
