@@ -37,10 +37,10 @@ export class UserQueryRepository {
 
         let filter: any = {$or: []};
         if (searchEmailTerm) {
-            filter['$or']?.push({email: {$regex: searchEmailTerm, $options: 'i'}});
+            filter['$or']?.push({'accountData.email': {$regex: searchEmailTerm, $options: 'i'}});
         }
         if (searchLoginTerm) {
-            filter['$or']?.push({login: {$regex: searchLoginTerm, $options: 'i'}});
+            filter['$or']?.push({'accountData.login': {$regex: searchLoginTerm, $options: 'i'}});
         }
         if (filter['$or']?.length === 0) {
             filter['$or']?.push({});
@@ -66,7 +66,7 @@ export class UserQueryRepository {
             }
 
         } catch (e) {
-            throw new Error('Does not get all users')
+            throw new Error('users was not get ')
         }
     }
 
