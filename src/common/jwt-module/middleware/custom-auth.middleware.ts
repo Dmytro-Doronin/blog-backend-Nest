@@ -1,6 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import {CustomJwtService} from "../service/jwt.service";
 
 @Injectable()

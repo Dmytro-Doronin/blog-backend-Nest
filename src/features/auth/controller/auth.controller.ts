@@ -20,6 +20,7 @@ import {UserQueryRepository} from "../../user/repositories/user.query-repository
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {UserRepository} from "../../user/repositories/user.repository";
+import {UniqueEmailValidationPipe} from "../pipes/email-validation.pipe";
 @Controller('/auth')
 export class AuthController {
     constructor(
@@ -59,29 +60,30 @@ export class AuthController {
 
     @HttpCode(204)
     @Post('/registration')
+    @UsePipes(new UniqueEmailValidationPipe(UserRepository))
     async registration (
         @Request() req,
         @Res() res: Response,
-        @Body(new ValidationPipe()) authInputDto: AuthInputDto
+        @Body(new ValidationPipe()) authInputDto: AuthInputDto,
     ) {
 
-        const userEmail = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.email)
-
-        if (userEmail) {
-            // throw new UserAlreadyExistsException('email')
-           return res.status(400).json({
-                errorsMessages: [{ message: "User with this email already exists", field: "email" }]
-            })
-        }
-
-        const userLogin = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.login)
-
-        if (userLogin) {
-            // throw new UserAlreadyExistsException('login')
-            return res.status(400).json({
-                errorsMessages: [{ message: "User with this email already exists", field: "login" }]
-            })
-        }
+        // const userEmail = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.email)
+        //
+        // if (userEmail) {
+        //     // throw new UserAlreadyExistsException('email')
+        //    return res.status(400).json({
+        //         errorsMessages: [{ message: "User with this email already exists", field: "email" }]
+        //     })
+        // }
+        //
+        // const userLogin = await this.userQueryRepository.findUserByLoginOrEmail(authInputDto.login)
+        //
+        // if (userLogin) {
+        //     // throw new UserAlreadyExistsException('login')
+        //     return res.status(400).json({
+        //         errorsMessages: [{ message: "User with this email already exists", field: "login" }]
+        //     })
+        // }
 
         await this.authService.registration({
             login: authInputDto.login,
