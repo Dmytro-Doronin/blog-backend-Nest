@@ -14,6 +14,9 @@ import {BasicAuthStrategy} from "./strategies/basic.strategy";
 import {BasicAuthGuard} from "./guards/basic-auth.guard";
 import {JwtAuthGuard} from "./guards/jwt-auth.guard";
 import {LocalAuthGuard} from "./guards/local-auth.guard";
+import {IsUserAlreadyExistConstraint} from "../../common/validator/validation-login-password.validator";
+import {IsEmailConfirmedConstraint} from "../../common/validator/validation-email-confirmation.validator";
+import {WrongConfirmationCodeConstraint} from "../../common/validator/validation-wrong-code.validator";
 
 
 @Module({
@@ -33,6 +36,9 @@ import {LocalAuthGuard} from "./guards/local-auth.guard";
         BasicAuthGuard,
         JwtAuthGuard,
         LocalAuthGuard,
+        IsUserAlreadyExistConstraint,
+        IsEmailConfirmedConstraint,
+        WrongConfirmationCodeConstraint
     ],
     exports: [
         AuthService,
