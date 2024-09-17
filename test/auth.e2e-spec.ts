@@ -34,7 +34,6 @@ describe('AuthController (e2e)', () => {
         expect(response.body.errorsMessages[0].message).toBe('User with this email already exists');
     });
 
-    // Повторите тест для случая, когда login уже существует
 
     afterEach(async () => {
         await app.close();

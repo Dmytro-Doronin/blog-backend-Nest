@@ -1,5 +1,5 @@
 import {Trim} from "../../../../common/decorators/trim";
-import {IsEmail, IsString, IsUrl, Length} from "class-validator";
+import {IsEmail, IsString, IsUrl, Length, MaxLength, MinLength} from "class-validator";
 import {
     IsUserAlreadyExist
 } from "../../../../common/validator/validation-login-password.validator";

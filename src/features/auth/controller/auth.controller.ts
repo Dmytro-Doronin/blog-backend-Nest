@@ -62,7 +62,7 @@ export class AuthController {
     async registration (
         @Body(new ValidationPipe()) authInputDto: AuthInputDto,
     ) {
-
+        console.log(authInputDto.login, authInputDto.password, authInputDto.email)
         await this.authService.registration({
             login: authInputDto.login,
             password: authInputDto.password,
@@ -127,9 +127,32 @@ export class AuthController {
         // return res.sendStatus(204)
     }
 
+
+
+    // @HttpCode(204)
+    // @Post('/password-recovery')
+    // async passwordRecovery (@Body(new ValidationPipe()) newPasswordDto: NewPasswordDto) {
+    //     const result = await this.authService.newPassword(newPasswordDto.recoveryCode, newPasswordDto.newPassword)
+    //
+    //     if(!result) {
+    //         throw new NotFoundException('Password was not changed')
+    //     }
+    // }
+    //
+    // @HttpCode(204)
+    // @Post('/new-password')
+    // async newPassword (@Body(new ValidationPipe()) passwordRecoveryDto: EmailDto) {
+    //     const result = await this.authService.recoveryPassword(passwordRecoveryDto.email)
+    //
+    //     if(!result) {
+    //         throw new NotFoundException('Password was not changed')
+    //     }
+    // }
+
+    @HttpCode(204)
     @Post('/password-recovery')
-    async passwordRecovery (@Body(new ValidationPipe()) newPasswordDto: NewPasswordDto) {
-        const result = await this.authService.newPassword(newPasswordDto.recoveryCode, newPasswordDto.newPassword)
+    async passwordRecovery (@Body(new ValidationPipe()) passwordRecoveryDto: EmailDto) {
+        const result = await this.authService.recoveryPassword(passwordRecoveryDto.email)
 
         if(!result) {
             throw new NotFoundException('Password was not changed')
@@ -138,8 +161,8 @@ export class AuthController {
 
     @HttpCode(204)
     @Post('/new-password')
-    async newPassword (@Body(new ValidationPipe()) passwordRecoveryDto: EmailDto) {
-        const result = await this.authService.recoveryPassword(passwordRecoveryDto.email)
+    async newPassword (@Body(new ValidationPipe()) newPasswordDto: NewPasswordDto) {
+        const result = await this.authService.newPassword(newPasswordDto.recoveryCode, newPasswordDto.newPassword)
 
         if(!result) {
             throw new NotFoundException('Password was not changed')
