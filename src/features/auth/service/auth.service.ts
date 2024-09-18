@@ -102,7 +102,6 @@ export class AuthService {
     async newPassword (recoveryCode: string, newPassword: string) {
 
         const user = await this.userRepository.getUserByPasswordRecoveryCode(recoveryCode)
-
         if (!user) {
             return null
         }

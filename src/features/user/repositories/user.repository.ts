@@ -99,7 +99,8 @@ export class UserRepository {
     async getUserByPasswordRecoveryCode (code: string)  {
 
         try {
-            const user = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code}).lean()
+            // const user = await this.UserModel.findOne({"emailConfirmation.confirmationCode": code}).lean()
+            const user = await this.UserModel.findOne({"passwordRecovery.passwordRecoveryCode": code}).lean()
             if (!user) {
                 return null
             }

@@ -163,7 +163,6 @@ export class AuthController {
     @Post('/new-password')
     async newPassword (@Body(new ValidationPipe()) newPasswordDto: NewPasswordDto) {
         const result = await this.authService.newPassword(newPasswordDto.recoveryCode, newPasswordDto.newPassword)
-
         if(!result) {
             throw new NotFoundException('Password was not changed')
         }
