@@ -11,7 +11,7 @@ export class CustomJwtService {
 
     async createJWT(user: any, deviceId: string = uuidv4()) {
         const currentDate = new Date()
-        const accessTokenPayload = { sub: user.id };
+        const accessTokenPayload = { sub: user.id, expireDate:  new Date(currentDate.getSeconds() + 1)};
         const refreshTokenPayload = {
             sub: user.id,
             lastActiveDate: currentDate,
@@ -25,6 +25,7 @@ export class CustomJwtService {
     }
    verifyRefreshToken (refreshToken: string) {
         const decodedToken = this.jwtService.verify(refreshToken);
+       console.log(decodedToken)
         return decodedToken
     }
 
@@ -32,7 +33,7 @@ export class CustomJwtService {
 
         try {
             const result: any = this.jwtService.verify(token)
-            return result.userId
+            return result.sub
         } catch (e) {
             return false
         }

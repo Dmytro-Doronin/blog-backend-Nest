@@ -1,25 +1,26 @@
 import {
-    Controller,
-    Request,
-    Post,
-    UseGuards,
-    Res,
-    Req,
     Body,
-    ValidationPipe,
+    Controller,
+    Get,
     HttpCode,
-    NotFoundException, Get, UsePipes
+    NotFoundException,
+    Post,
+    Request,
+    Res,
+    UseGuards,
+    ValidationPipe
 } from '@nestjs/common';
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../service/auth.service";
-import { Response } from 'express';
-import {AccessTokenDto, AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
+import {Response} from 'express';
+import {AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
 import {DeviceService} from "../../device/service/device.service";
 import {VerifyRefreshTokenGuard} from "../../../common/jwt-module/guards/verify-token.guard";
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {UserRepository} from "../../user/repositories/user.repository";
+
 @Controller('/auth')
 export class AuthController {
     constructor(
@@ -27,7 +28,8 @@ export class AuthController {
         private deviceService: DeviceService,
         private userQueryRepository: UserQueryRepository,
         private customJwtService: CustomJwtService,
-        protected userRepository: UserRepository
+        protected userRepository: UserRepository,
+        private readonly jwtService: CustomJwtService
     ) {}
 
     @UseGuards(LocalAuthGuard)
@@ -174,7 +176,7 @@ export class AuthController {
     async refreshToken (
         @Request() req,
         @Res() res: Response,
-        @Body(new ValidationPipe()) accessTokenDto) {
+         ) {
 
         const userId = req.userId;
         const deviceId = req.deviceId
@@ -188,6 +190,8 @@ export class AuthController {
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }
+
+        console.log(refreshToken, accessToken)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
         res.send({ accessToken });
     }
@@ -213,12 +217,22 @@ export class AuthController {
     ) {
         const userId = req.userId
         const user = await this.userQueryRepository.getUserById(userId)
-
+        // let userIdMAin
+        // console.log(req.headers.authorization)
+        // const token = req.headers.authorization.split(' ')[1]
+        // console.log('token', token)
+        // userIdMAin = await this.jwtService.getUserIdByToken(token)
+        // console.log('userIdMAin', userIdMAin.sub)
+        //
+        // console.log('user id',userIdMAin)
+        // const user = await this.userQueryRepository.getUserById(userIdMAin)
+        // console.log(user)
         if (!user) {
             throw new NotFoundException('User was not found')
+
         }
 
-        res.status(200).send({email: user.email, login: user.login, userId: userId})
+        res.status(200).send({email: user.email, login: user?.login, userId: userId})
     }
 
 }
