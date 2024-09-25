@@ -51,8 +51,8 @@ export class AuthController {
         const { accessToken, refreshToken } = await this.authService.createJWT(user)
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
-        console.log('refresh token', refreshToken)
-        console.log('accessToken token', accessToken)
+        // console.log('refresh token', refreshToken)
+        // console.log('accessToken token', accessToken)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
         res.status(200).send({ accessToken });
 
@@ -177,7 +177,10 @@ export class AuthController {
         @Request() req,
         @Res() res: Response,
          ) {
-
+        const refreshToken1 = req.cookies['refreshToken'];
+        if (!refreshToken1) {
+            console.log('Token ne valid')
+        }
         const userId = req.userId;
         const deviceId = req.deviceId
 
@@ -192,8 +195,8 @@ export class AuthController {
         }
         console.log('refresh token works')
         console.log(refreshToken, accessToken)
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
         res.send({ accessToken });
+        return res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, });
     }
 
     @UseGuards(VerifyRefreshTokenGuard)
@@ -205,7 +208,6 @@ export class AuthController {
         const deviceId = req.deviceId
 
         await this.deviceService.deleteDevice(deviceId)
-
         res.sendStatus(204)
     }
 
