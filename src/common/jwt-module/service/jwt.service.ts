@@ -25,7 +25,6 @@ export class CustomJwtService {
     }
    verifyRefreshToken (refreshToken: string) {
         const decodedToken = this.jwtService.verify(refreshToken);
-       console.log(decodedToken)
         return decodedToken
     }
 

@@ -53,8 +53,16 @@ export class AuthController {
         await this.deviceService.createDevice(refreshToken, ip, title2)
         // console.log('refresh token', refreshToken)
         // console.log('accessToken token', accessToken)
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none', // Обязательно для междоменных запросов
+        });
         res.status(200).send({ accessToken });
+        // res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true,  });
+
+
 
     }
 
@@ -177,26 +185,23 @@ export class AuthController {
         @Request() req,
         @Res() res: Response,
          ) {
-        const refreshToken1 = req.cookies['refreshToken'];
-        if (!refreshToken1) {
-            console.log('Token ne valid')
-        }
         const userId = req.userId;
         const deviceId = req.deviceId
 
         const user = await this.userQueryRepository.getUserById(userId)
-
+        console.log(user)
         const {refreshToken, accessToken} = await this.customJwtService.createJWT(user, deviceId)
-
+        console.log('new refresh token', refreshToken)
         const result = await this.deviceService.changeDevicesData(refreshToken)
-
+        console.log(result)
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }
         console.log('refresh token works')
         console.log(refreshToken, accessToken)
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
         res.send({ accessToken });
-        return res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, });
+
     }
 
     @UseGuards(VerifyRefreshTokenGuard)

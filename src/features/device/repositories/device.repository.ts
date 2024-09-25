@@ -23,7 +23,7 @@ export class DeviceRepository {
         try {
 
             const deviceInDb = await this.DeviceModel.findOne({deviceId}).lean()
-
+            console.log('deviceInDb', deviceInDb)
             if (!deviceInDb) {
                 return null
             }
