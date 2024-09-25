@@ -11,7 +11,7 @@ export class CustomJwtService {
 
     async createJWT(user: any, deviceId: string = uuidv4()) {
         const currentDate = new Date()
-        const accessTokenPayload = { sub: user.id, expireDate:  new Date(currentDate.getSeconds() + 1)};
+        const accessTokenPayload = { sub: user.id, expireDate:  5};
         const refreshTokenPayload = {
             sub: user.id,
             lastActiveDate: currentDate,

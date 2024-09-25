@@ -42,19 +42,19 @@ export class AuthController {
         const user = req.user
         const title = req.headers['User-Agent']
         let title2
-
         if (typeof title !== "string" || typeof title !== undefined) {
             title2 = title?.[0]
         } else {
             title2 = title
         }
 
-
         const { accessToken, refreshToken } = await this.authService.createJWT(user)
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-        return res.status(200).send({ accessToken });
+        console.log('refresh token', refreshToken)
+        console.log('accessToken token', accessToken)
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+        res.status(200).send({ accessToken });
 
     }
 
@@ -190,7 +190,7 @@ export class AuthController {
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }
-
+        console.log('refresh token works')
         console.log(refreshToken, accessToken)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
         res.send({ accessToken });
