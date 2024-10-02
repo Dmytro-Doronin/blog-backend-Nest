@@ -6,7 +6,7 @@ export class MailManager  {
 
         const htmlMessage = ` <h1>Thanks for your registration dear ${subject}</h1>
                         <p>To finish registration please follow the link below:
-                                <a href='http://localhost:4200/auth/email-confirmed?code=${code}'>complete registration</a>
+                                <a href='http://localhost:4200/auth/email-confirmation?code=${code}'>complete registration</a>
       
                         </p>`
         return await emailAdapter.send(subject, email, htmlMessage)
