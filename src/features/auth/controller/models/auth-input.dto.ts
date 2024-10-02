@@ -50,6 +50,7 @@ export class EmailDto {
     @IsEmailConfirmed({
         message: 'Email already confirmed'
     })
+
     readonly email: string
 }
 

@@ -99,7 +99,7 @@ export class AuthController {
         // }
         //
         const confirm= await this.authService.registrationConfirmation(confirmationInputDto.code)
-
+        console.log('confirm',confirm)
 
         if (!confirm) {
             throw new NotFoundException('Account was not confirmed')
