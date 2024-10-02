@@ -72,7 +72,6 @@ export class AuthController {
     async registration (
         @Body(new ValidationPipe()) authInputDto: AuthInputDto,
     ) {
-        console.log(authInputDto.login, authInputDto.password, authInputDto.email)
         await this.authService.registration({
             login: authInputDto.login,
             password: authInputDto.password,
