@@ -42,7 +42,7 @@ export class ConfirmationInputDto {
     readonly code: string
 }
 
-export class EmailDto {
+export class EmailConfirmedDto {
     @Trim()
     @IsString()
     @Length(1, 100)
@@ -51,6 +51,14 @@ export class EmailDto {
         message: 'Email already confirmed'
     })
 
+    readonly email: string
+}
+
+export class EmailDto {
+    @Trim()
+    @IsString()
+    @Length(1, 100)
+    @IsEmail()
     readonly email: string
 }
 

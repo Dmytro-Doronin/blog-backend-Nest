@@ -13,7 +13,7 @@ import {
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../service/auth.service";
 import {Response} from 'express';
-import {AuthInputDto, ConfirmationInputDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
+import {AuthInputDto, ConfirmationInputDto, EmailConfirmedDto, EmailDto, NewPasswordDto} from "./models/auth-input.dto";
 import {DeviceService} from "../../device/service/device.service";
 import {VerifyRefreshTokenGuard} from "../../../common/jwt-module/guards/verify-token.guard";
 import {UserQueryRepository} from "../../user/repositories/user.query-repository";
@@ -113,7 +113,7 @@ export class AuthController {
     async emailResending (
         // @Request() req,
         // @Res() res: Response,
-        @Body(new ValidationPipe()) emailResendingDto: EmailDto
+        @Body(new ValidationPipe()) emailResendingDto: EmailConfirmedDto
     ) {
         // const user = await this.userRepository.findUserByLoginOrEmail(emailResendingDto.email)
         //
