@@ -17,6 +17,7 @@ import {CreateBolgDto, CreatePostInBolgDto} from "./models/create-blog.dto";
 import {PostService} from "../../post/services/post.service";
 import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/common.types";
 import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
+import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 
 @Controller('/blogs')
 export class BlogController {
@@ -54,10 +55,11 @@ export class BlogController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post()
     async createNewBlogController(@Body(new ValidationPipe()) createBlogDto: CreateBolgDto) {
-
+        console.log('v tele create tokena')
         const result = await this.blogService.createBlogService({
             name: createBlogDto.name,
             description: createBlogDto.description,
