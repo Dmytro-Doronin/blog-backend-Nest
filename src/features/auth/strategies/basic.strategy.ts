@@ -10,10 +10,10 @@ export class BasicAuthStrategy extends PassportStrategy(BasicStrategy) {
     }
 
     async validate(username: string, password: string): Promise<any> {
-        // const isValid = (username === 'admin' && password === 'qwerty');
-        const user = await this.authService.validateUser(username, password);
+        const isValid = (username === 'admin' && password === 'qwerty');
+        // const isValid = await this.authService.validateUser(username, password);
 
-        if (!user) {
+        if (!isValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
         return { username };
