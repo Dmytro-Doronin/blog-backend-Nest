@@ -188,11 +188,11 @@ export class AuthController {
         const deviceId = req.deviceId
 
         const user = await this.userQueryRepository.getUserById(userId)
-        console.log(user)
+
         const {refreshToken, accessToken} = await this.customJwtService.createJWT(user, deviceId)
-        console.log('new refresh token', refreshToken)
+
         const result = await this.deviceService.changeDevicesData(refreshToken)
-        console.log(result)
+
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }

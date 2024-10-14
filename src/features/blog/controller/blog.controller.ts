@@ -59,7 +59,6 @@ export class BlogController {
     @UseGuards(JwtAuthGuard)
     @Post()
     async createNewBlogController(@Body(new ValidationPipe()) createBlogDto: CreateBolgDto) {
-        console.log('v tele create tokena')
         const result = await this.blogService.createBlogService({
             name: createBlogDto.name,
             description: createBlogDto.description,
