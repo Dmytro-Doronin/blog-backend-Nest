@@ -6,6 +6,7 @@ export class BlogOutputModel {
     description: string
     websiteUrl:	string
     createdAt: string
+    userId: string
     isMembership: boolean
 }
 
@@ -25,6 +26,7 @@ export const BlogOutputModelMapper = (blog: BlogDocument): BlogOutputModel => {
     outputModel.description = blog.description;
     outputModel.websiteUrl = blog.websiteUrl;
     outputModel.createdAt = blog.createdAt;
+    outputModel.userId = blog.userId;
     outputModel.isMembership = blog.isMembership;
 
 

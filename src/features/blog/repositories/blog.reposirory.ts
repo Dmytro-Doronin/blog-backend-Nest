@@ -15,7 +15,7 @@ export class BlogRepository {
     constructor(@InjectModel(Blog.name) private BlogModel: Model<Blog>) {}
 
     async createBlogInDb(newBlog: Blog) {
-
+        console.log(newBlog)
         try {
             await this.BlogModel.create(newBlog)
             const result = await this.BlogModel.findOne({id: newBlog.id})

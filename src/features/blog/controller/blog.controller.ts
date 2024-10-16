@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query, UseGuards,
+    Query, Request, Res, UseGuards,
     ValidationPipe
 } from "@nestjs/common";
 import {NumberPipes} from "../../../common/pipes/number.pipe";
@@ -18,6 +18,7 @@ import {PostService} from "../../post/services/post.service";
 import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/common.types";
 import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
+import {Response} from "express";
 
 @Controller('/blogs')
 export class BlogController {
@@ -58,14 +59,21 @@ export class BlogController {
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post()
-    async createNewBlogController(@Body(new ValidationPipe()) createBlogDto: CreateBolgDto) {
+    async createNewBlogController(
+        @Request() req,
+        @Res() res: Response,
+        @Body(new ValidationPipe()) createBlogDto: CreateBolgDto
+    ) {
+        const userId = req.user.userId
+        console.log('user id in controller', userId)
         const result = await this.blogService.createBlogService({
             name: createBlogDto.name,
             description: createBlogDto.description,
-            websiteUrl: createBlogDto.websiteUrl
+            websiteUrl: createBlogDto.websiteUrl,
+            userId: userId
         })
 
-        return result
+        res.status(200).send(result)
 
     }
 
