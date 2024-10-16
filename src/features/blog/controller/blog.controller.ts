@@ -137,7 +137,8 @@ export class BlogController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Put('/:id')
     async putBlogByIdController (
