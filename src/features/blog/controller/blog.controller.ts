@@ -159,7 +159,8 @@ export class BlogController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deleteBlogsByIdController (@Param('id') blogId: string,) {
