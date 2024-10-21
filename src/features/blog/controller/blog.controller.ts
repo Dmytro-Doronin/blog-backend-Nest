@@ -65,7 +65,6 @@ export class BlogController {
         @Body(new ValidationPipe()) createBlogDto: CreateBolgDto
     ) {
         const userId = req.user.userId
-        console.log('user id in controller', userId)
         const result = await this.blogService.createBlogService({
             name: createBlogDto.name,
             description: createBlogDto.description,

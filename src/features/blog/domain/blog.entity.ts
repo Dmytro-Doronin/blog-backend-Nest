@@ -27,7 +27,19 @@ export class Blog {
     @Prop({required: true})
     userId: string
 
-    static create(id: string, name: string, description: string, websiteUrl: string, createdAt: string, isMembership: boolean, userId: string) {
+    @Prop({required: true})
+    userName: string
+
+    static create(
+        id: string,
+        name: string,
+        description: string,
+        websiteUrl: string,
+        createdAt: string,
+        isMembership: boolean,
+        userId: string,
+        userName: string
+    ) {
         const blog = new Blog();
         blog.id = id;
         blog.name = name;
@@ -36,6 +48,7 @@ export class Blog {
         blog.createdAt = createdAt
         blog.isMembership = isMembership
         blog.isMembership = isMembership
+        blog.userName = userName
         blog.userId = userId
         return blog;
     }

@@ -5,14 +5,18 @@ import {Blog} from "../domain/blog.entity";
 import {BlogRepository} from "../repositories/blog.reposirory";
 import {BlogOutputModel, BlogOutputModelMapper} from "../controller/models/blog.output.mode.";
 import {ChangeBlogByIdTypes} from "../types/commonBlogTypes";
+import {UserRepository} from "../../user/repositories/user.repository";
 
 @Injectable()
 export class BlogService {
 
-    constructor(private readonly blogRepository: BlogRepository) {}
+    constructor(private readonly blogRepository: BlogRepository, private readonly userRepository: UserRepository) {}
 
     async createBlogService({name, description, websiteUrl, userId} : CreateBolgDto & {userId: string}): Promise<BlogOutputModel | null>  {
-
+        const user = await this.userRepository.getUserById(userId)
+        if(!user) {
+            return null
+        }
         const newBlog = Blog.create(
             uuidv4(),
             name,
@@ -20,7 +24,8 @@ export class BlogService {
             websiteUrl,
             new Date().toISOString(),
             false,
-            userId
+            userId,
+            user.accountData.login
         )
 
         const blog = await this.blogRepository.createBlogInDb(newBlog)

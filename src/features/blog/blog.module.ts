@@ -8,15 +8,17 @@ import {BlogService} from "./services/blog.service";
 import {BlogRepository} from "./repositories/blog.reposirory";
 import {PostModule} from "../post/post.module";
 import {AuthModule} from "../auth/auth.module";
+import {UserModule} from "../user/user.module";
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Blog.name, schema: BlogsSchema }]),
         forwardRef(() => PostModule),
-        AuthModule
+        AuthModule,
+        UserModule,
     ],
     controllers: [BlogController],
-    providers: [BlogService, BlogQueryRepository, BlogRepository],
+    providers: [BlogService, BlogQueryRepository, BlogRepository ],
     exports: [BlogRepository],
 })
 export class BlogModule {}
