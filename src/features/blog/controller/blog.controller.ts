@@ -76,12 +76,14 @@ export class BlogController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('/:id/posts')
     async createPostToBlogController (
         @Param('id') blogId: string,
         @Body(new ValidationPipe()) createPostInBlogDto: CreatePostInBolgDto
     ) {
+        console.log('in createPostToBlogController')
         const post = await this.postService.createPostService({
             title: createPostInBlogDto.title,
             shortDescription: createPostInBlogDto.shortDescription,
