@@ -96,9 +96,10 @@ export class PostService {
     private async _mapPosts (posts: AllPostWithPagination, userId: string) {
         const mappedItems = await Promise.all(posts.items.map(async (item) => {
             let status: "Like" | "Dislike" | "None" | undefined
-
+            console.log('userId есть', userId)
             if (userId) {
                 const likeForCurrentComment = await this.likeRepository.getLike(userId, item.id);
+                console.log('likeForCurrentComment есть',likeForCurrentComment)
                 status = likeForCurrentComment?.type
             }
 

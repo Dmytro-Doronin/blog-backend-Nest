@@ -17,6 +17,7 @@ import {LocalAuthGuard} from "./guards/local-auth.guard";
 import {IsUserAlreadyExistConstraint} from "../../common/validator/validation-login-password.validator";
 import {IsEmailConfirmedConstraint} from "../../common/validator/validation-email-confirmation.validator";
 import {WrongConfirmationCodeConstraint} from "../../common/validator/validation-wrong-code.validator";
+import {OptionalJwtAuthGuard} from "./guards/optional-jwt-auth-guard.guard";
 
 
 @Module({
@@ -36,6 +37,7 @@ import {WrongConfirmationCodeConstraint} from "../../common/validator/validation
         BasicAuthGuard,
         JwtAuthGuard,
         LocalAuthGuard,
+        OptionalJwtAuthGuard,
         IsUserAlreadyExistConstraint,
         IsEmailConfirmedConstraint,
         WrongConfirmationCodeConstraint
@@ -45,6 +47,7 @@ import {WrongConfirmationCodeConstraint} from "../../common/validator/validation
         BasicAuthGuard,
         JwtAuthGuard,
         LocalAuthGuard,
+        OptionalJwtAuthGuard
     ],
 })
 export class AuthModule {}

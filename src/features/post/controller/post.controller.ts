@@ -54,8 +54,7 @@ export class PostController {
         @Query('pageNumber') pageNumber: string,
         @Query('pageSize') pageSize: string,
     ) {
-        const userId = req.userId //need to add
-
+        const userId = req.user.userId //need to add
         const sortData: QueryPostInputModel = {
             sortBy: sortBy,
             sortDirection: sortDirection,
@@ -227,9 +226,10 @@ export class PostController {
         @Body(new ValidationPipe()) likeStatus: LikeStatusDto
     ) {
         const target = "Post"
-        const userId = req.userId
+        const userId = req.user.userId
 
         const post = await this.postQueryRepository.getPostById(postId)
+
 
         if (!post) {
             throw new NotFoundException('Post not found')
@@ -243,6 +243,7 @@ export class PostController {
         }
 
         if (likeStatus.likeStatus === likeOrDislike.type) {
+            await this.likeService.changeLikeStatus(postId, 'None', userId, target)
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
 

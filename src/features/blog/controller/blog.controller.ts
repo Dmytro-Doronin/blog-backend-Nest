@@ -19,6 +19,7 @@ import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/co
 import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 import {Response} from "express";
+import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
 
 @Controller('/blogs')
 export class BlogController {
@@ -83,7 +84,6 @@ export class BlogController {
         @Param('id') blogId: string,
         @Body(new ValidationPipe()) createPostInBlogDto: CreatePostInBolgDto
     ) {
-        console.log('in createPostToBlogController')
         const post = await this.postService.createPostService({
             title: createPostInBlogDto.title,
             shortDescription: createPostInBlogDto.shortDescription,
@@ -97,7 +97,7 @@ export class BlogController {
 
         return post
     }
-
+    @UseGuards(OptionalJwtAuthGuard)
     @Get('/:id/posts')
     async getAllPostInBlogController (
         @Query('sortBy') sortBy: string,
@@ -105,10 +105,11 @@ export class BlogController {
         @Query('pageNumber') pageNumber: string,
         @Query('pageSize') pageSize: string,
         @Param('id') blogId: string,
+        @Request() req
     ) {
 
-        const userId: string = ''
-
+        const userId: string = req.user ? req.user.userId : ''
+        console.log('userId в getAllPostInBlogController', userId)
         const sortData: QueryPostInputModel = {
             sortBy: sortBy,
             sortDirection: sortDirection,
@@ -117,12 +118,12 @@ export class BlogController {
         }
 
         const blog = await this.blogsQueryRepository.getBlogByIdInDb(blogId)
-
+        console.log(blog)
         if (!blog) {
             throw new NotFoundException('Post not found')
         }
 
-        return await this.postService.getAllPosts(sortData,userId, blogId)
+        return await this.postService.getAllPosts(sortData, userId, blogId)
 
     }
 
