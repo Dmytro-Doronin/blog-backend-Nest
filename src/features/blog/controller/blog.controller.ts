@@ -57,6 +57,34 @@ export class BlogController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('/user-blogs')
+    async getAllBlogsForUser (
+        @Request() req,
+        @Res() res: Response,
+        @Query('searchNameTerm') searchNameTerm: string,
+        @Query('sortBy') sortBy: string,
+        @Query('sortDirection') sortDirection: "asc" | "desc",
+        @Query('pageNumber') pageNumber: string,
+        @Query('pageSize') pageSize: string,
+    ) {
+        const userId = req.user.userId
+        console.log('in new')
+
+        const sortData: QueryBlogInputModel = {
+            searchNameTerm: searchNameTerm,
+            sortBy: sortBy,
+            sortDirection: sortDirection,
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+        }
+
+        const blogs = await this.blogsQueryRepository.getAllBlogInDb(sortData, userId)
+
+        res.status(200).send(blogs)
+
+    }
+
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post()

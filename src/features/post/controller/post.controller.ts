@@ -22,6 +22,7 @@ import {UserQueryRepository} from "../../user/repositories/user.query-repository
 import {LikeService} from "../../likes/service/like.service";
 import {QueryLikeRepository} from "../../likes/repositories/query-like.repository";
 import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
+import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
 
 @Controller('/posts')
 export class PostController {
@@ -44,7 +45,7 @@ export class PostController {
     }
 
 
-
+    @UseGuards(OptionalJwtAuthGuard)
     @Get()
     async getAllPost(
         @Request() req,
@@ -54,7 +55,7 @@ export class PostController {
         @Query('pageNumber') pageNumber: string,
         @Query('pageSize') pageSize: string,
     ) {
-        const userId = req.user.userId //need to add
+        const userId: string = req.user ? req.user.userId : '' //need to add
         const sortData: QueryPostInputModel = {
             sortBy: sortBy,
             sortDirection: sortDirection,
@@ -67,8 +68,8 @@ export class PostController {
         return res.status(200).send(posts)
 
     }
-
-    @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post()
     async createPost (
         @Body(new ValidationPipe()) createPostDto: CreatePostDto
