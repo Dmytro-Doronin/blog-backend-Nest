@@ -88,14 +88,14 @@ export class PostController {
         return post
     }
 
-
+    @UseGuards(OptionalJwtAuthGuard)
     @Get('/:id')
     async getPostById (
         @Request() req,
         @Res() res: Response,
         @Param('id') postId: string
     ) {
-        const userId = req.postId //need to add
+        const userId = req.user.postId //need to add
 
         const post: PostOutputModel | null = await this.postService.getPostById(postId, userId)
 
