@@ -107,7 +107,8 @@ export class PostController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Put('/:id')
     async changePostById (
@@ -134,7 +135,8 @@ export class PostController {
 
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deletePOstById (

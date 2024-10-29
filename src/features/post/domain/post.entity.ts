@@ -27,6 +27,12 @@ export class Posts {
     @Prop({required: true})
     createdAt: string
 
+    @Prop({required: true})
+    userId: string
+
+    @Prop({required: true})
+    userName: string
+
     static create(
         id: string,
         title: string,
@@ -34,7 +40,9 @@ export class Posts {
         content: string,
         blogId: string,
         blogName: string,
-        createdAt: string
+        createdAt: string,
+        userId: string,
+        userName: string
     ) {
         const post = new Posts();
         post.id = id;
@@ -44,6 +52,8 @@ export class Posts {
         post.blogId = blogId
         post.blogName = blogName
         post.createdAt = createdAt
+        post.userId = userId
+        post.userName = userName
 
         return post;
     }

@@ -58,6 +58,8 @@ export class PostService {
             return null
         }
 
+
+
         const newPost = Posts.create(
             uuidv4(),
             title,
@@ -66,6 +68,9 @@ export class PostService {
             blogId,
             blog.name,
             (new Date().toISOString()),
+            blog.userId,
+            blog.userName,
+
         )
 
         const post = await this.postRepository.createPostInDb(newPost)
@@ -128,6 +133,8 @@ export class PostService {
                 blogId: item.blogId,
                 blogName: item.blogName,
                 createdAt: item.createdAt,
+                userId: item.userId,
+                userName: item.userName,
                 extendedLikesInfo: {
                     likesCount: likes.length ?? 0,
                     dislikesCount: dislikes.length ?? 0,

@@ -16,6 +16,8 @@ export class PostOutputModel {
     blogId: string
     blogName: string
     createdAt: string
+    userId: string
+    userName: string
     extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
@@ -29,7 +31,7 @@ export class PostOutputModelWithPagination {
     page?: number
     pageSize?: number
     totalCount?: number
-    items: PostOutputModel []
+    items: PostOutputModel[]
 }
 
 
@@ -49,6 +51,9 @@ export const PostOutputModelMapper = (
     outputModel.blogId = post.blogId;
     outputModel.blogName = post.blogName;
     outputModel.createdAt = post.createdAt;
+    outputModel.userId = post.userId;
+    outputModel.userName = post.userName;
+
     outputModel.extendedLikesInfo = {
         likesCount,
         dislikesCount,
