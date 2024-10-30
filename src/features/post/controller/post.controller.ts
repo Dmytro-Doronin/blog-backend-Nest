@@ -95,14 +95,14 @@ export class PostController {
         @Res() res: Response,
         @Param('id') postId: string
     ) {
-        const userId = req.user.postId //need to add
+        const userId = req.user ? req.user.userId : '' //need to add
 
         const post: PostOutputModel | null = await this.postService.getPostById(postId, userId)
 
         if (!post) {
             throw new NotFoundException('Post not found')
         }
-
+        console.log(post)
         return res.status(200).send(post)
 
     }
