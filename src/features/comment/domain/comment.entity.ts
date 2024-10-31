@@ -31,13 +31,15 @@ export class Comment {
         createdAt: string
         ) {
 
-        const comment = new Comment()
-        comment.id = id
-        comment.postId = postId
-        comment.content = content
-        comment.commentatorInfo.userId = commentatorInfo.userId
-        comment.commentatorInfo.userLogin = commentatorInfo.userLogin
-        comment.createdAt = createdAt
+        const comment = new Comment();
+        comment.id = id;
+        comment.postId = postId;
+        comment.content = content;
+        comment.commentatorInfo = {
+            userId: commentatorInfo.userId,
+            userLogin: commentatorInfo.userLogin,
+        };
+        comment.createdAt = createdAt;
 
         return comment
     }

@@ -26,7 +26,7 @@ export class CommentRepository {
     }
 
     async createCommentForPostInDb (newComments: Comment) {
-
+        console.log('New Comment in repository:', newComments)
         try {
             await this.CommentModel.create(newComments)
 

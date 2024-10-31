@@ -42,7 +42,6 @@ export class CommentService {
     }
 
     async createComment (postId: string, content: string, userId: string, userLogin: string) {
-
         const newComment = Comment.create(
             uuidv4(),
             postId,

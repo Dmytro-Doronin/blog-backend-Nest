@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query, Request, Res, UseGuards,
+    Query, Request, Res, UnauthorizedException, UseGuards,
     ValidationPipe
 } from "@nestjs/common";
 import {QueryPostInputModel} from "../../../common/types/common.types";
@@ -196,22 +196,21 @@ export class PostController {
         @Body(new ValidationPipe()) contentDto: CreateCommentsForDto
     ) {
 
-        const userId = req.userId
+        const userId = req.user.userId
+        if (!req.user) {
+            throw new UnauthorizedException('User not authenticated');
+        }
 
         const post = await this.postQueryRepository.getPostById(postId)
-
         if (!post) {
             throw new NotFoundException('Post not found')
         }
 
         const user = await this.userQueryRepository.getUserById(userId)
-
         if (!user) {
             throw new NotFoundException('User not found')
         }
-
         const comment = await this.commentService.createComment(postId, contentDto.content, userId, user.login)
-
         if(!comment) {
             throw new NotFoundException('Comment not found')
         }
