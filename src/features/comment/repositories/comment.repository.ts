@@ -30,7 +30,7 @@ export class CommentRepository {
         try {
             await this.CommentModel.create(newComments)
 
-            const comment = await this.CommentModel.findOne({id: newComments.id})
+            const comment = await this.CommentModel.findOne({id: newComments.id}).lean()
 
             if (!comment) {
                 return null

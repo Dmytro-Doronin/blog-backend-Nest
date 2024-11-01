@@ -9,7 +9,7 @@ export class CommentOutputModel {
             userLogin:string
         }
         createdAt: string
-        likesInfo: {
+        likesInfo?: {
             likesCount: number,
             dislikesCount: number,
             myStatus: likeStatusType
@@ -28,7 +28,7 @@ export type CommentOutputModelWithPagination = {
 
 
 export const CommentOutputModelMapper = (
-    comment: CommentDocument,
+    comment: CommentOutputModel,
     likesCount: number = 0,
     dislikesCount: number = 0,
     status: likeStatusType = "None"
