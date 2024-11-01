@@ -102,7 +102,6 @@ export class PostController {
         if (!post) {
             throw new NotFoundException('Post not found')
         }
-        console.log(post)
         return res.status(200).send(post)
 
     }
@@ -155,7 +154,7 @@ export class PostController {
         }
 
     }
-
+    @UseGuards(OptionalJwtAuthGuard)
     @Get('/:id/comments')
     async getAllCommentsForPost (
         @Request() req,
@@ -166,7 +165,7 @@ export class PostController {
         @Query('pageSize') pageSize: string,
         @Param('id') postId: string
     ) {
-        const userId = req.userId //need to add
+        const userId = req.user ? req.user.userId : '' //need to add
 
         const post = await this.postQueryRepository.getPostById(postId)
 
