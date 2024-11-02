@@ -12,6 +12,5 @@ export class CommentDto {
 export class CommentLikeStatusDto {
     @Trim()
     @IsString()
-    @Length(20, 300)
     readonly likeStatus: likeStatusType
 }

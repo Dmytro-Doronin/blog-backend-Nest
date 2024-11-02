@@ -5,6 +5,7 @@ import {CommentRepository} from "../repositories/comment.repository";
 import {LikeRepository} from "../../likes/repositories/like.repository";
 import {CommentOutputModelMapper, CommentOutputModelWithPagination} from "../controller/models/comment.output.model";
 import {Comment} from "../domain/comment.entity";
+import {isLogLevelEnabled} from "@nestjs/common/services/utils";
 const { v4: uuidv4 } = require('uuid');
 
 @Injectable()
@@ -69,15 +70,13 @@ export class CommentService {
     }
 
     private async _mapCommentService (comments: CommentsWithPaginationType, userId: string): Promise<CommentOutputModelWithPagination> {
-
         const mappedItems = await Promise.all(comments.items.map(async (item) => {
             let status: likeStatusType | undefined
-
             if (userId) {
                 const likeForCurrentComment = await this.likeRepository.getLike(userId, item.id);
+                // console.log(likeForCurrentComment?.type)
                 status = likeForCurrentComment?.type
             }
-
 
             const allLikesAndDislikesForCurrentComment = await this.likeRepository.getAllLikesAndDislikesForTarget(item.id);
             const likes = allLikesAndDislikesForCurrentComment.filter(item => item.type === "Like");

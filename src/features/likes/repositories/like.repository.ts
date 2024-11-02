@@ -26,13 +26,11 @@ export class LikeRepository {
     //         throw new Error('Can not get All Likes And Dislikes')
     //     }
     // }
-
     async getAllLikesAndDislikesForTarget(targetId: string) {
         try {
-            return await this.LikeModel.find({targetId: targetId}).lean()
-
+            return await this.LikeModel.find({ targetId }).lean()
         } catch (e) {
-            throw new Error('Can not get likes or dislikes for target')
+            throw new Error('Cannot get likes or dislikes for targets')
         }
     }
 

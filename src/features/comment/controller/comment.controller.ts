@@ -37,7 +37,6 @@ export class CommentController {
         if (!comment) {
             throw new NotFoundException('Comment not found')
         }
-
         return comment
     }
 
@@ -106,15 +105,14 @@ export class CommentController {
         @Body(new ValidationPipe()) likeStatus: CommentLikeStatusDto
     ) {
         const target = "Comment"
-        const userId = req.userId
+        const userId = req.user.userId
         const comment = await this.commentQueryRepository.getCommentById(commentId)
-
         if (!comment) {
             throw new NotFoundException()
         }
 
         const likeOrDislike = await this.queryLikeRepository.getLike(userId,commentId)
-
+        console.log(likeOrDislike)
         if (!likeOrDislike) {
             await this.likeService.createLike(commentId, likeStatus.likeStatus, userId, target)
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
@@ -125,7 +123,6 @@ export class CommentController {
         }
 
         const result = await this.likeService.changeLikeStatus(commentId, likeStatus.likeStatus, userId, target)
-
         if (!result) {
             throw new NotFoundException()
         }

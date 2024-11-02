@@ -137,7 +137,6 @@ export class BlogController {
     ) {
 
         const userId: string = req.user ? req.user.userId : ''
-        console.log('userId в getAllPostInBlogController', userId)
         const sortData: QueryPostInputModel = {
             sortBy: sortBy,
             sortDirection: sortDirection,
@@ -146,7 +145,6 @@ export class BlogController {
         }
 
         const blog = await this.blogsQueryRepository.getBlogByIdInDb(blogId)
-        console.log(blog)
         if (!blog) {
             throw new NotFoundException('Post not found')
         }

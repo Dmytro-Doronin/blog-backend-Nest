@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query, Request, Res, UnauthorizedException, UseGuards,
+    Query, Req, Request, Res, UnauthorizedException, UseGuards,
     ValidationPipe
 } from "@nestjs/common";
 import {QueryPostInputModel} from "../../../common/types/common.types";
@@ -154,18 +154,18 @@ export class PostController {
         }
 
     }
+
     @UseGuards(OptionalJwtAuthGuard)
     @Get('/:id/comments')
     async getAllCommentsForPost (
-        @Request() req,
-        @Res() res: Response,
         @Query('sortBy') sortBy: string,
         @Query('sortDirection') sortDirection: "asc" | "desc",
         @Query('pageNumber') pageNumber: string,
         @Query('pageSize') pageSize: string,
-        @Param('id') postId: string
+        @Param('id') postId: string,
+        @Request() req
     ) {
-        const userId = req.user ? req.user.userId : '' //need to add
+        const userId: string = req.user ? req.user.userId : ''
 
         const post = await this.postQueryRepository.getPostById(postId)
 
@@ -181,8 +181,8 @@ export class PostController {
         }
 
         const comments =  await this.commentService.getAllCommentsForPostService(postId,sortData, userId )
+        return comments
 
-        return res.status(200).send(comments)
 
     }
 
