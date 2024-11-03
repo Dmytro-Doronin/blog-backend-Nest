@@ -76,7 +76,7 @@ export class CommentController {
         @Res() res: Response,
         @Param('commentId') commentId: string,
     ) {
-        const currentUserId = req.userId
+        const currentUserId = req.user.userId
         const comment = await this.commentQueryRepository.getCommentById(commentId)
 
         if (!comment) {
