@@ -17,6 +17,7 @@ import {CommentDto, CommentLikeStatusDto} from "./models/comment-input.dto";
 import {Response} from "express";
 import {QueryLikeRepository} from "../../likes/repositories/query-like.repository";
 import {LikeService} from "../../likes/service/like.service";
+import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
 
 @Controller('/comments')
 export class CommentController {
@@ -28,12 +29,13 @@ export class CommentController {
         private readonly likeService: LikeService
     ) {}
 
+    @UseGuards(OptionalJwtAuthGuard)
     @Get('/:id')
-    async getCommentByIdController (@Param('id') commentId: string) {
-        const userId = '' // need to add
+    async getCommentByIdController (@Param('id') commentId: string, @Request() req) {
+        const userId: string = req.user ? req.user.userId : '' // need to add
 
         const comment = await this.commentService.getCommentByIdService(commentId, userId)
-
+        console.log(comment)
         if (!comment) {
             throw new NotFoundException('Comment not found')
         }
@@ -42,16 +44,15 @@ export class CommentController {
 
 
     @UseGuards(JwtAuthGuard)
-    @Put('/:commentId ')
+    @Put('/:commentId')
     async changeCommentById(
         @Request() req,
         @Res() res: Response,
         @Param('commentId') commentId: string,
         @Body(new ValidationPipe()) commentDto: CommentDto
     ) {
-        const currentUserId = req.userId
+        const currentUserId = req.user.userId
         const comment = await this.commentQueryRepository.getCommentById(commentId)
-
         if (!comment) {
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
         }

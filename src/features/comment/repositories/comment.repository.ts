@@ -12,7 +12,7 @@ export class CommentRepository {
 
     async getCommentById (commentId: string) {
         try {
-            const result = await this.CommentModel.findOne({id: commentId})
+            const result = await this.CommentModel.findOne({id: commentId}).lean()
 
             if (!result) {
                 return null

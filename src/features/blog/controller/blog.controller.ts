@@ -69,7 +69,6 @@ export class BlogController {
         @Query('pageSize') pageSize: string,
     ) {
         const userId = req.user.userId
-        console.log('in new')
 
         const sortData: QueryBlogInputModel = {
             searchNameTerm: searchNameTerm,
