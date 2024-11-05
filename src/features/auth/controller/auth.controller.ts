@@ -20,6 +20,8 @@ import {UserQueryRepository} from "../../user/repositories/user.query-repository
 import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {UserRepository} from "../../user/repositories/user.repository";
+import UAParser from 'ua-parser-js';
+
 
 @Controller('/auth')
 export class AuthController {
@@ -40,10 +42,15 @@ export class AuthController {
     ) {
         const ip = req.ip
         const user = req.user
-        const title = req.headers['User-Agent']
+        const userAgent = req.headers['user-agent'];
+        const parser = new UAParser(userAgent);
+        const result = parser.getResult();
+        // const title = result.device.model
+        const title = result.browser.name
+
         let title2
         if (typeof title !== "string" || typeof title !== undefined) {
-            title2 = title?.[0]
+            title2 = title
         } else {
             title2 = title
         }
