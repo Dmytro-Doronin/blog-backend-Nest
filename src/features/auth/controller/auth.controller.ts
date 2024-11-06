@@ -47,7 +47,7 @@ export class AuthController {
         const result = parser.getResult();
         // const title = result.device.model
         const title = result.browser.name
-
+        console.log(ip)
         let title2
         if (typeof title !== "string" || typeof title !== undefined) {
             title2 = title
@@ -64,7 +64,7 @@ export class AuthController {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'none', // Обязательно для междоменных запросов
+            sameSite: 'none',
         });
         res.status(200).send({ accessToken });
         // res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true,  });

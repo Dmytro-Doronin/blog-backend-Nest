@@ -30,7 +30,6 @@ export class DeviceService {
     async changeDevicesData (token: string) {
 
         const {deviceId, lastActiveDate, expireDate} = await this.jwtService.verifyRefreshToken(token)
-        console.log('deviceId,', deviceId, 'lastActiveDate,', lastActiveDate, 'expireDate,', expireDate)
         return await this.deviceRepository.changeDeviceDataByDeviceId(deviceId, lastActiveDate, expireDate)
     }
 

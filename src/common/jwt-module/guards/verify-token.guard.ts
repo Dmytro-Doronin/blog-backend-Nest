@@ -16,7 +16,7 @@ export class VerifyRefreshTokenGuard implements CanActivate {
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
         const refreshTokenFromCookie = request.cookies.refreshToken;
-        console.log('refreshCookie in guard', request.cookies.refreshToken)
+        // console.log('refreshCookie in guard', request.cookies.refreshToken)
 
         if (!refreshTokenFromCookie) {
             return false;
