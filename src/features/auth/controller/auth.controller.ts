@@ -40,7 +40,7 @@ export class AuthController {
         @Request() req,
         @Res() res: Response
     ) {
-        const ip = req.ip
+        const ip = req.headers['x-forwarded-for'] || req.ip
         const user = req.user
         const userAgent = req.headers['user-agent'];
         const parser = new UAParser(userAgent);
@@ -203,8 +203,6 @@ export class AuthController {
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }
-        console.log('refresh token works')
-        console.log(refreshToken, accessToken)
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
         res.send({ accessToken });
 
@@ -221,31 +219,22 @@ export class AuthController {
         await this.deviceService.deleteDevice(deviceId)
         res.sendStatus(204)
     }
-
+    // @UseGuards(VerifyRefreshTokenGuard)
     @UseGuards(JwtAuthGuard)
     @Get('/me')
     async me (
         @Request() req,
         @Res() res: Response,
     ) {
-        const userId = req.userId
+        const userId = req.user.userId
+        const deviceId = req.user.deviceId
         const user = await this.userQueryRepository.getUserById(userId)
-        // let userIdMAin
-        // console.log(req.headers.authorization)
-        // const token = req.headers.authorization.split(' ')[1]
-        // console.log('token', token)
-        // userIdMAin = await this.jwtService.getUserIdByToken(token)
-        // console.log('userIdMAin', userIdMAin.sub)
-        //
-        // console.log('user id',userIdMAin)
-        // const user = await this.userQueryRepository.getUserById(userIdMAin)
-        // console.log(user)
         if (!user) {
             throw new NotFoundException('User was not found')
 
         }
 
-        res.status(200).send({email: user.email, login: user?.login, userId: userId})
+        res.status(200).send({email: user.email, login: user?.login, userId: userId, deviceId: deviceId})
     }
 
 }
