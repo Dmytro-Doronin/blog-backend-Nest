@@ -9,6 +9,7 @@ export class BlogOutputModel {
     userId: string
     userName: string
     isMembership: boolean
+    imageUrl: string
 }
 
 export class BlogFinalOutputModel {
@@ -30,6 +31,8 @@ export const BlogOutputModelMapper = (blog: BlogDocument): BlogOutputModel => {
     outputModel.userId = blog.userId;
     outputModel.userName = blog.userName
     outputModel.isMembership = blog.isMembership;
+    outputModel.imageUrl = blog.imageUrl;
+
 
 
     return outputModel;

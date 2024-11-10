@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query, Request, Res, UseGuards,
+    Query, Request, Res, UploadedFile, UseGuards, UseInterceptors,
     ValidationPipe
 } from "@nestjs/common";
 import {NumberPipes} from "../../../common/pipes/number.pipe";
@@ -20,6 +20,9 @@ import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 import {Response} from "express";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
+import { S3 } from 'aws-sdk';
+import {s3} from '../../../../aws.config';
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('/blogs')
 export class BlogController {
@@ -87,16 +90,35 @@ export class BlogController {
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post()
+    @UseInterceptors(FileInterceptor('image'))
     async createNewBlogController(
+        @UploadedFile() file: Express.Multer.File,
         @Request() req,
         @Res() res: Response,
         @Body(new ValidationPipe()) createBlogDto: CreateBolgDto
     ) {
+
         const userId = req.user.userId
+
+        let imageUrl = '';
+        if (file) {
+            const uploadResult = await s3
+                .upload({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: `blogs/${Date.now()}_${file.originalname}`,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                })
+                .promise();
+
+            imageUrl = uploadResult.Location;
+        }
+
         const result = await this.blogService.createBlogService({
             name: createBlogDto.name,
             description: createBlogDto.description,
             websiteUrl: createBlogDto.websiteUrl,
+            imageUrl: imageUrl,
             userId: userId
         })
 
@@ -111,6 +133,8 @@ export class BlogController {
         @Param('id') blogId: string,
         @Body(new ValidationPipe()) createPostInBlogDto: CreatePostInBolgDto
     ) {
+
+
         const post = await this.postService.createPostService({
             title: createPostInBlogDto.title,
             shortDescription: createPostInBlogDto.shortDescription,

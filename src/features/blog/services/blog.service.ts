@@ -12,7 +12,7 @@ export class BlogService {
 
     constructor(private readonly blogRepository: BlogRepository, private readonly userRepository: UserRepository) {}
 
-    async createBlogService({name, description, websiteUrl, userId} : CreateBolgDto & {userId: string}): Promise<BlogOutputModel | null>  {
+    async createBlogService({name, description, websiteUrl, userId, imageUrl} : CreateBolgDto & {userId: string, imageUrl: string}): Promise<BlogOutputModel | null>  {
         const user = await this.userRepository.getUserById(userId)
         if(!user) {
             return null
@@ -25,6 +25,7 @@ export class BlogService {
             new Date().toISOString(),
             false,
             userId,
+            imageUrl,
             user.accountData.login
         )
 
