@@ -51,7 +51,7 @@ export class PostService {
 
     }
 
-    async createPostService ({title, shortDescription, content, blogId}: CreatePostDto) {
+    async createPostService ({title, shortDescription, content, blogId, imageUrl}: CreatePostDto & { imageUrl: string }) {
         const blog = await this.blogRepository.getBlogByIdInDb(blogId)
 
         if (!blog) {
@@ -70,7 +70,7 @@ export class PostService {
             (new Date().toISOString()),
             blog.userId,
             blog.userName,
-
+            imageUrl
         )
 
         const post = await this.postRepository.createPostInDb(newPost)
@@ -83,8 +83,8 @@ export class PostService {
 
     }
 
-    async changePostByIdService ({id, title, shortDescription, content, blogId}: CreatePostsServiceType ) {
-        return await this.postRepository.changePostById({id, title, shortDescription, content, blogId})
+    async changePostByIdService ({id, title, shortDescription, content, blogId, imageUrl}: CreatePostsServiceType & {imageUrl?: string} ) {
+        return await this.postRepository.changePostById({id, title, shortDescription, content, blogId, imageUrl})
     }
 
     async getAllPosts (sortData: QueryPostInputModel, userId: string = '', blogId: null | string = null) {
@@ -135,6 +135,7 @@ export class PostService {
                 createdAt: item.createdAt,
                 userId: item.userId,
                 userName: item.userName,
+                imageUrl: item.imageUrl,
                 extendedLikesInfo: {
                     likesCount: likes.length ?? 0,
                     dislikesCount: dislikes.length ?? 0,

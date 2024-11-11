@@ -38,8 +38,8 @@ export class BlogService {
         return BlogOutputModelMapper(blog)
     }
 
-    async changeBlogByIdService ({id ,name, description, websiteUrl} : ChangeBlogByIdTypes) {
-        return await this.blogRepository.changeBlogByIdInDb({id ,name, description, websiteUrl})
+    async changeBlogByIdService ({id ,name, description, websiteUrl, imageUrl} : ChangeBlogByIdTypes & {imageUrl?: string}) {
+        return await this.blogRepository.changeBlogByIdInDb({id ,name, description, websiteUrl, imageUrl})
     }
 
     async deleteBlogByIdService(id: string) {

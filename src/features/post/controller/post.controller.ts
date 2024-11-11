@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Put,
-    Query, Req, Request, Res, UnauthorizedException, UseGuards,
+    Query, Req, Request, Res, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors,
     ValidationPipe
 } from "@nestjs/common";
 import {QueryPostInputModel} from "../../../common/types/common.types";
@@ -23,6 +23,8 @@ import {LikeService} from "../../likes/service/like.service";
 import {QueryLikeRepository} from "../../likes/repositories/query-like.repository";
 import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {s3} from "../../../../aws.config";
 
 @Controller('/posts')
 export class PostController {
@@ -69,16 +71,32 @@ export class PostController {
 
     }
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
     // @UseGuards(BasicAuthGuard)
     @Post()
     async createPost (
+        @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createPostDto: CreatePostDto
     ) {
+
+        let imageUrl = '';
+        if (file) {
+            const uploadResult = await s3.upload({
+                Bucket: process.env.AWS_BUCKET_NAME as string,
+                Key: `blogs/${Date.now()}_${file.originalname}`,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            }).promise();
+
+            imageUrl = uploadResult.Location;
+        }
+
         const post = await this.postService.createPostService({
             title: createPostDto.title,
             shortDescription: createPostDto.shortDescription,
             content: createPostDto.content,
-            blogId: createPostDto.blogId
+            blogId: createPostDto.blogId,
+            imageUrl: imageUrl
         })
 
         if (!post) {
@@ -108,24 +126,63 @@ export class PostController {
 
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
     @HttpCode(204)
     @Put('/:id')
     async changePostById (
         @Param('id') postId: string,
+        @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createPostDto: CreatePostDto
     ) {
-        const post = await this.postQueryRepository.getPostById(postId)
 
-        if(!post) {
+        const existingPost = await this.postQueryRepository.getPostById(postId)
+
+        if(!existingPost) {
             throw new NotFoundException('Post not found')
         }
+
+
+        if (existingPost.imageUrl) {
+            let oldKey = existingPost.imageUrl.split('.com/')[1]
+            oldKey = decodeURIComponent(oldKey)
+
+            if (oldKey) {
+                try {
+                    await s3
+                        .deleteObject({
+                            Bucket: process.env.AWS_BUCKET_NAME as string,
+                            Key: oldKey,
+                        })
+                        .promise()
+                    console.log(`Old img ${oldKey} deleted`)
+                } catch (error) {
+                    console.error(`Ca not delete ol img: ${error.message}`)
+                }
+            }
+        }
+
+        let imageUrl: string | undefined;
+        if (file) {
+            const uploadResult = await s3
+                .upload({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: `blogs/${Date.now()}_${file.originalname}`,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                })
+                .promise();
+
+            imageUrl = uploadResult.Location;
+        }
+
 
         const result = await this.postService.changePostByIdService({
             id: postId,
             title: createPostDto.title,
             shortDescription: createPostDto.shortDescription,
             content: createPostDto.content,
-            blogId: createPostDto.blogId
+            blogId: createPostDto.blogId,
+            imageUrl: imageUrl
         })
 
         if (!result) {
@@ -141,9 +198,9 @@ export class PostController {
     async deletePOstById (
         @Param('id') postId: string,
     ) {
-        const post = await this.postQueryRepository.getPostById(postId)
+        const existingPost = await this.postQueryRepository.getPostById(postId)
 
-        if (!post) {
+        if (!existingPost) {
             throw new NotFoundException('Post not found')
         }
 
@@ -151,6 +208,17 @@ export class PostController {
 
         if (!result) {
             throw new NotFoundException('Post was not delete')
+        }
+
+        if (existingPost.imageUrl) {
+            let oldKey = existingPost.imageUrl.split('amazonaws.com/')[1]
+            oldKey = decodeURIComponent(oldKey)
+            await s3
+                .deleteObject({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: oldKey,
+                })
+                .promise();
         }
 
     }

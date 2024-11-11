@@ -15,7 +15,6 @@ export class BlogRepository {
     constructor(@InjectModel(Blog.name) private BlogModel: Model<Blog>) {}
 
     async createBlogInDb(newBlog: Blog) {
-        console.log(newBlog)
         try {
             await this.BlogModel.create(newBlog)
             const result = await this.BlogModel.findOne({id: newBlog.id})
@@ -44,18 +43,28 @@ export class BlogRepository {
 
     }
 
-    async changeBlogByIdInDb ({id ,name, description, websiteUrl}: ChangeBlogByIdTypes) {
+    async changeBlogByIdInDb ({id ,name, description, websiteUrl, imageUrl}: ChangeBlogByIdTypes & { imageUrl?: string }) {
         try {
-            const addedItem = await this.BlogModel.findOne({id: id}).lean()
+            // const addedItem = await this.BlogModel.findOne({id: id}).lean()
+            //
+            // if (!addedItem) {
+            //     return null
+            // }
 
-            if (!addedItem) {
-                return null
+            const updateData: any = {
+                name,
+                description,
+                websiteUrl
+            }
+
+            if (imageUrl) {
+                updateData.imageUrl = imageUrl
             }
 
             const result = await this.BlogModel.updateOne(
                 {id: id},
                 {
-                    $set: {name, description, websiteUrl}
+                    $set: updateData
                 }
             )
 

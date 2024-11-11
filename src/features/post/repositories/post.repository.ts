@@ -85,18 +85,24 @@ export class PostRepository {
 
     }
 
-    async changePostById ({id, title, shortDescription, content, blogId}: CreatePostsServiceType) {
+    async changePostById ({id, title, shortDescription, content, blogId, imageUrl}: CreatePostsServiceType& {imageUrl?: string}) {
         try {
-            const addedItem = await this.PostModel.findOne({id: id}).lean()
+            const updateData: any = {
+                id,
+                title,
+                shortDescription,
+                content,
+                blogId
+            }
 
-            if (!addedItem) {
-                return null
+            if (imageUrl) {
+                updateData.imageUrl = imageUrl
             }
 
             const result = await this.PostModel.updateOne(
                 {id: id},
                 {
-                    $set: {title, shortDescription, content, blogId }
+                    $set: updateData
                 }
             )
 

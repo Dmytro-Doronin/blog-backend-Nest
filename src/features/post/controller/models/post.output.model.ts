@@ -18,6 +18,7 @@ export class PostOutputModel {
     createdAt: string
     userId: string
     userName: string
+    imageUrl: string
     extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
@@ -53,6 +54,7 @@ export const PostOutputModelMapper = (
     outputModel.createdAt = post.createdAt;
     outputModel.userId = post.userId;
     outputModel.userName = post.userName;
+    outputModel.imageUrl = post.imageUrl
 
     outputModel.extendedLikesInfo = {
         likesCount,

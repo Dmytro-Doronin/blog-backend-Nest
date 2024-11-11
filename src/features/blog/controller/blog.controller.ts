@@ -129,17 +129,33 @@ export class BlogController {
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post('/:id/posts')
+    @UseInterceptors(FileInterceptor('image'))
     async createPostToBlogController (
         @Param('id') blogId: string,
+        @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createPostInBlogDto: CreatePostInBolgDto
     ) {
 
+        let imageUrl = '';
+        if (file) {
+            const uploadResult = await s3
+                .upload({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: `blogs/${Date.now()}_${file.originalname}`,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                })
+                .promise();
+
+            imageUrl = uploadResult.Location;
+        }
 
         const post = await this.postService.createPostService({
             title: createPostInBlogDto.title,
             shortDescription: createPostInBlogDto.shortDescription,
             content: createPostInBlogDto.content,
-            blogId: blogId
+            blogId: blogId,
+            imageUrl: imageUrl
         })
 
         if (!post) {
@@ -189,19 +205,61 @@ export class BlogController {
     }
 
     // @UseGuards(BasicAuthGuard)
+
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileInterceptor('image'))
     @HttpCode(204)
     @Put('/:id')
     async putBlogByIdController (
+        @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createBlogDto: CreateBolgDto,
         @Param('id') blogId: string,
 
     ) {
+        const existingBlog = await this.blogsQueryRepository.getBlogByIdInDb(blogId);
+        if (!existingBlog) {
+            throw new NotFoundException('Blog not found');
+        }
+
+        if (existingBlog.imageUrl) {
+            let oldKey = existingBlog.imageUrl.split('.com/')[1]
+            oldKey = decodeURIComponent(oldKey)
+
+            if (oldKey) {
+                try {
+                    await s3
+                        .deleteObject({
+                            Bucket: process.env.AWS_BUCKET_NAME as string,
+                            Key: oldKey,
+                        })
+                        .promise()
+                    console.log(`Old img ${oldKey} deleted`)
+                } catch (error) {
+                    console.error(`Ca not delete ol img: ${error.message}`)
+                }
+            }
+        }
+
+        let imageUrl: string | undefined;
+        if (file) {
+            const uploadResult = await s3
+                .upload({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: `blogs/${Date.now()}_${file.originalname}`,
+                    Body: file.buffer,
+                    ContentType: file.mimetype,
+                })
+                .promise();
+
+            imageUrl = uploadResult.Location;
+        }
+
         const result = await this.blogService.changeBlogByIdService({
             id: blogId,
             name: createBlogDto.name,
-            description: createBlogDto.description ,
-            websiteUrl:createBlogDto.websiteUrl
+            description: createBlogDto.description,
+            websiteUrl: createBlogDto.websiteUrl,
+            imageUrl: imageUrl
         })
 
         if (!result) {
@@ -215,10 +273,28 @@ export class BlogController {
     @HttpCode(204)
     @Delete('/:id')
     async deleteBlogsByIdController (@Param('id') blogId: string,) {
+
+
+        const existingBlog = await this.blogsQueryRepository.getBlogByIdInDb(blogId);
+        if (!existingBlog) {
+            throw new NotFoundException('Blog not found');
+        }
+
         const result = await this.blogService.deleteBlogByIdService(blogId)
 
         if (!result) {
             throw new NotFoundException('Blog was not deleted')
+        }
+
+        if (existingBlog.imageUrl) {
+            let oldKey = existingBlog.imageUrl.split('amazonaws.com/')[1]
+            oldKey = decodeURIComponent(oldKey)
+            await s3
+                .deleteObject({
+                    Bucket: process.env.AWS_BUCKET_NAME as string,
+                    Key: oldKey,
+                })
+                .promise();
         }
 
     }

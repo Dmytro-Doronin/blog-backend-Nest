@@ -21,7 +21,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         if (!user) {
             throw new UnauthorizedException();
         }
-        console.log(payload.deviceId)
         return { userId: payload.sub, deviceId: payload.deviceId};
     }
 }
