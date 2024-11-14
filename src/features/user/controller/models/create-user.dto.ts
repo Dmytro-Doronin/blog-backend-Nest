@@ -18,3 +18,10 @@ export class CreateUserDto {
     @IsEmail()
     readonly email: string
 }
+
+export class ChangeUserDto {
+    @Trim()
+    @IsString()
+    @Length(3, 10)
+    readonly login: string;
+}

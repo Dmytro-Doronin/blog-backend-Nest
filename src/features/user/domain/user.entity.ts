@@ -15,6 +15,7 @@ export class User {
             passwordHash: {type: String, required: true},
             passwordSalt: {type: String, required: true},
             createdAt: {type: String, required: true},
+            imageUrl: {type: String, required: false}
         },
         required: true,
         default: {}
@@ -25,6 +26,7 @@ export class User {
         passwordHash: string,
         passwordSalt: string,
         createdAt: string,
+        imageUrl?: string
     }
     @Prop({
         type: {
@@ -77,6 +79,7 @@ export class User {
             passwordHash: string,
             passwordSalt: string,
             createdAt: string
+            imageUrl: string
         },
         emailConfirmation: {
             confirmationCode: string,

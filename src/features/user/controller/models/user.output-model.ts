@@ -6,6 +6,7 @@ export class UserOutputModel {
     login: string
     email: string
     createdAt: string
+    imageUrl: string | undefined
 }
 
 export class UserServiceModel {
@@ -32,6 +33,7 @@ export const UserOutputMapper = (user: UserDocument): UserOutputModel => {
     userOutputModel.login = user.accountData.login
     userOutputModel.email = user.accountData.email
     userOutputModel.createdAt = user.accountData.createdAt
+    userOutputModel.imageUrl = user.accountData.imageUrl
 
     return userOutputModel
 

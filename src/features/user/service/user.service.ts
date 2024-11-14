@@ -27,7 +27,8 @@ export class UserService {
                 email,
                 passwordHash,
                 passwordSalt,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                imageUrl: ''
             },
             {
                 confirmationCode: uuidv4(),
@@ -62,6 +63,16 @@ export class UserService {
 
         return UserServiceMapper(user)
 
+    }
+
+    async changeUserData(id: string, newLogin: string, imageUrl: string | undefined) {
+        const updatedUser = await this.userRepository.updateUserInfo(id, newLogin, imageUrl)
+
+        if (!updatedUser) {
+            return null
+        }
+
+        return UserOutputMapper(updatedUser)
     }
 
     async deleteUserById (userId: string) {

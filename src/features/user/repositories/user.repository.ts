@@ -57,6 +57,33 @@ export class UserRepository {
 
     }
 
+    async updateUserInfo(id: string, newLogin: string, imageUrl?: string) {
+        try {
+
+            const updateData: any = {
+                "accountData.login": newLogin,
+            }
+
+            if (imageUrl) {
+                updateData["accountData.imageUrl"] = imageUrl
+            }
+
+
+            const result = await this.UserModel.updateOne(
+                { id },
+                { $set: updateData }
+            )
+
+            if (result.modifiedCount === 1 ) {
+                return await this.UserModel.findOne({id})
+            }
+
+            return false
+        } catch (e) {
+            throw new Error(`User information could not be updated: ${e.message}`)
+        }
+    }
+
     async updateConfirmation (id: string) {
 
         try {
