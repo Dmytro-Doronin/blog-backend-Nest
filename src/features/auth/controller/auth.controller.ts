@@ -234,7 +234,7 @@ export class AuthController {
 
         }
 
-        res.status(200).send({email: user.email, login: user?.login, userId: userId, deviceId: deviceId})
+        res.status(200).send({email: user.email, login: user?.login, userId: userId, deviceId: deviceId, imageUrl: user.imageUrl})
     }
 
 }
