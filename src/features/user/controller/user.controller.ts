@@ -12,11 +12,9 @@ import {
 } from "@nestjs/common";
 import {ChangeUserDto, CreateUserDto} from "./models/create-user.dto";
 import {UserService} from "../service/user.service";
-import {NumberPipes} from "../../../common/pipes/number.pipe";
 import {QueryUserInputModel} from "../../../common/types/common.types";
 import {UserQueryRepository} from "../repositories/user.query-repository";
 import {UserOutputModelWithPagination} from "./models/user.output-model";
-import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {s3} from "../../../../aws.config";
@@ -35,7 +33,9 @@ export class UserController {
         this.userService = userService
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    // @UseGuards(OptionalJwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get()
     async getAllUsers (
         @Query('sortBy') sortBy: string,
@@ -96,7 +96,6 @@ export class UserController {
                                 Key: oldKey,
                             })
                             .promise();
-                        console.log(`Old img ${oldKey} deleted`);
                     } catch (error) {
                         console.error(`Cannot delete old img: ${error.message}`);
                     }
@@ -124,7 +123,8 @@ export class UserController {
         return res.status(200).send(newUser)
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post()
     async createUser (@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
         const user = await this.userService.createUser({
@@ -140,7 +140,8 @@ export class UserController {
         return user
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Delete('/:id')
     async deleteUserById (@Param('id') userId: string) {
