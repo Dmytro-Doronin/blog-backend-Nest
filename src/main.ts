@@ -14,7 +14,7 @@ async function bootstrap() {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
 
     if (req.method === 'OPTIONS') {
-      res.sendStatus(204);  // Отвечаем на предзапрос
+      res.sendStatus(204);  
     } else {
       next();
     }
@@ -26,15 +26,9 @@ async function bootstrap() {
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
-    preflightContinue: false,  // Останавливает предзапросы на уровне CORS
-    optionsSuccessStatus: 204  // Устанавливает успешный код ответа для OPTIONS
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   });
-  // app.enableCors({
-  //   origin: '*',
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  //   allowedHeaders: 'Content-Type, Authorization',
-  // });
-
 
 
   await app.listen(3000);
