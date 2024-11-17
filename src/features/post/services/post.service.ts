@@ -51,7 +51,7 @@ export class PostService {
 
     }
 
-    async createPostService ({title, shortDescription, content, blogId, imageUrl}: CreatePostDto & { imageUrl: string }) {
+    async createPostService ({title, shortDescription, content, blogId, imageUrl}: CreatePostDto & { imageUrl: string  }) {
         const blog = await this.blogRepository.getBlogByIdInDb(blogId)
 
         if (!blog) {

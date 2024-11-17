@@ -33,7 +33,7 @@ export class Posts {
     @Prop({required: true})
     userName: string
 
-    @Prop({required: true})
+    @Prop({required: false, default: ''})
     imageUrl: string
 
     static create(

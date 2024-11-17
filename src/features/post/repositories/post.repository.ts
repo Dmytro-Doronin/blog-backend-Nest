@@ -70,8 +70,9 @@ export class PostRepository {
 
     async createPostInDb (newPost : Posts) {
         try {
-
-            await this.PostModel.create(newPost)
+            console.log(newPost)
+            const createResult = await this.PostModel.create(newPost)
+            console.log(createResult)
             const result = await this.PostModel.findOne({id: newPost.id})
 
             if (!result) {

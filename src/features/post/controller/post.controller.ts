@@ -272,12 +272,11 @@ export class PostController {
         if (!post) {
             throw new NotFoundException('Post not found')
         }
-
         const user = await this.userQueryRepository.getUserById(userId)
         if (!user) {
             throw new NotFoundException('User not found')
         }
-        const comment = await this.commentService.createComment(postId, contentDto.content, userId, user.login)
+        const comment = await this.commentService.createComment(postId, contentDto.content, userId, user.login, user.imageUrl)
         if(!comment) {
             throw new NotFoundException('Comment not found')
         }

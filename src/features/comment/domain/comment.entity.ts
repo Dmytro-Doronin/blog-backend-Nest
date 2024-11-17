@@ -16,10 +16,11 @@ export class Comment {
         type: {
             userId: { type: String, required: true },
             userLogin: { type: String, required: true },
+            userImageUrl: { type: String, required: false, default: '' },
         },
         required: true,
     })
-    commentatorInfo: { userId: string; userLogin: string };
+    commentatorInfo: { userId: string; userLogin: string, userImageUrl: string };
     @Prop({type: String, required: true})
     createdAt: string
 
@@ -27,8 +28,8 @@ export class Comment {
         id: string,
         postId: string,
         content: string,
-        commentatorInfo : {userId: string, userLogin: string},
-        createdAt: string
+        commentatorInfo : {userId: string, userLogin: string, userImageUrl: string},
+        createdAt: string,
         ) {
 
         const comment = new Comment();
@@ -38,6 +39,7 @@ export class Comment {
         comment.commentatorInfo = {
             userId: commentatorInfo.userId,
             userLogin: commentatorInfo.userLogin,
+            userImageUrl: commentatorInfo.userImageUrl
         };
         comment.createdAt = createdAt;
 

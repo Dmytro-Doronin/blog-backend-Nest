@@ -42,13 +42,13 @@ export class CommentService {
         return this._mapCommentService(comments, userId)
     }
 
-    async createComment (postId: string, content: string, userId: string, userLogin: string) {
+    async createComment (postId: string, content: string, userId: string, userLogin: string, userImageUrl: string = '') {
         const newComment = Comment.create(
             uuidv4(),
             postId,
             content,
-            {userId: userId, userLogin: userLogin},
-            (new Date().toISOString())
+            {userId: userId, userLogin: userLogin, userImageUrl},
+            (new Date().toISOString()),
         )
 
         const comment = await this.commentRepository.createCommentForPostInDb(newComment)
