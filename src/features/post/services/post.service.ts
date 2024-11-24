@@ -151,7 +151,8 @@ export class PostService {
             pageSize: posts.pageSize,
             totalCount: posts.totalCount,
             items: mappedItems
-        };
+        }
     }
+
 
 }

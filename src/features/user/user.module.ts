@@ -7,12 +7,13 @@ import {UserService} from "./service/user.service";
 import {UserQueryRepository} from "./repositories/user.query-repository";
 import {MailManager} from "../../common/manager/mail/mail-manager";
 import {AuthModule} from "../auth/auth.module";
+import {S3Service} from "../../common/services/s3.service";
 
 
 @Module({
     imports: [MongooseModule.forFeature([{name: User.name, schema: UserSchema}])],
     controllers: [UserController],
-    providers: [UserRepository, UserService, UserQueryRepository, MailManager],
-    exports: [UserRepository, UserService, UserQueryRepository],
+    providers: [UserRepository, UserService, UserQueryRepository, MailManager, S3Service],
+    exports: [UserRepository, UserService, UserQueryRepository, S3Service],
 })
 export class UserModule {}

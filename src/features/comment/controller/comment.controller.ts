@@ -18,6 +18,7 @@ import {Response} from "express";
 import {QueryLikeRepository} from "../../likes/repositories/query-like.repository";
 import {LikeService} from "../../likes/service/like.service";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
+import {S3Service} from "../../../common/services/s3.service";
 
 @Controller('/comments')
 export class CommentController {
@@ -26,7 +27,7 @@ export class CommentController {
         private readonly commentQueryRepository: CommentQueryRepository,
         private readonly commentService: CommentService,
         private readonly queryLikeRepository: QueryLikeRepository,
-        private readonly likeService: LikeService
+        private readonly likeService: LikeService,
     ) {}
 
     @UseGuards(OptionalJwtAuthGuard)

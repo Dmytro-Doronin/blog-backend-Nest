@@ -10,6 +10,7 @@ import {CommentModule} from "../comment/comment.module";
 import {PostQueryRepository} from "./repositories/post.query-repository";
 import {AuthModule} from "../auth/auth.module";
 import {UserModule} from "../user/user.module";
+import {S3Service} from "../../common/services/s3.service";
 
 
 @Module({
@@ -22,7 +23,7 @@ import {UserModule} from "../user/user.module";
         UserModule
     ],
     controllers: [PostController],
-    providers: [PostRepository, PostService, PostQueryRepository],
-    exports: [PostService],
+    providers: [PostRepository, PostService, PostQueryRepository, S3Service],
+    exports: [PostService, S3Service],
 })
 export class PostModule {}

@@ -2,7 +2,7 @@ import {
     Body,
     Controller, Delete,
     Get,
-    HttpCode, HttpException, HttpStatus,
+    HttpCode, HttpException, HttpStatus, InternalServerErrorException,
     NotFoundException,
     Param,
     Post,
@@ -25,6 +25,7 @@ import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {s3} from "../../../../aws.config";
+import {S3Service} from "../../../common/services/s3.service";
 
 @Controller('/posts')
 export class PostController {
@@ -38,7 +39,8 @@ export class PostController {
         likeService: LikeService,
         private readonly postQueryRepository: PostQueryRepository,
         private readonly userQueryRepository: UserQueryRepository,
-        private readonly queryLikeRepository: QueryLikeRepository
+        private readonly queryLikeRepository: QueryLikeRepository,
+        private readonly s3Service: S3Service,
 
     ) {
         this.commentService = commentService
@@ -80,15 +82,19 @@ export class PostController {
     ) {
 
         let imageUrl = '';
-        if (file) {
-            const uploadResult = await s3.upload({
-                Bucket: process.env.AWS_BUCKET_NAME as string,
-                Key: `blogs/${Date.now()}_${file.originalname}`,
-                Body: file.buffer,
-                ContentType: file.mimetype,
-            }).promise();
+        // if (file) {
+        //     const uploadResult = await s3.upload({
+        //         Bucket: process.env.AWS_BUCKET_NAME as string,
+        //         Key: `blogs/${Date.now()}_${file.originalname}`,
+        //         Body: file.buffer,
+        //         ContentType: file.mimetype,
+        //     }).promise();
+        //
+        //     imageUrl = uploadResult.Location;
+        // }
 
-            imageUrl = uploadResult.Location;
+        if (file) {
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
         }
 
         const post = await this.postService.createPostService({
@@ -148,31 +154,17 @@ export class PostController {
 
             if (oldKey) {
                 try {
-                    await s3
-                        .deleteObject({
-                            Bucket: process.env.AWS_BUCKET_NAME as string,
-                            Key: oldKey,
-                        })
-                        .promise()
-                    console.log(`Old img ${oldKey} deleted`)
+                    await this.s3Service.deleteFile(oldKey)
                 } catch (error) {
-                    console.error(`Ca not delete ol img: ${error.message}`)
+                    throw new InternalServerErrorException(
+                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
                 }
             }
         }
 
         let imageUrl: string | undefined;
         if (file) {
-            const uploadResult = await s3
-                .upload({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: `blogs/${Date.now()}_${file.originalname}`,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                })
-                .promise();
-
-            imageUrl = uploadResult.Location;
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
         }
 
 
@@ -213,12 +205,14 @@ export class PostController {
         if (existingPost.imageUrl) {
             let oldKey = existingPost.imageUrl.split('amazonaws.com/')[1]
             oldKey = decodeURIComponent(oldKey)
-            await s3
-                .deleteObject({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: oldKey,
-                })
-                .promise();
+            if (oldKey) {
+                try {
+                    await this.s3Service.deleteFile(oldKey)
+                } catch (error) {
+                    throw new InternalServerErrorException(
+                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
+                }
+            }
         }
 
     }

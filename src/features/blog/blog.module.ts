@@ -9,6 +9,7 @@ import {BlogRepository} from "./repositories/blog.reposirory";
 import {PostModule} from "../post/post.module";
 import {AuthModule} from "../auth/auth.module";
 import {UserModule} from "../user/user.module";
+import {S3Service} from "../../common/services/s3.service";
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import {UserModule} from "../user/user.module";
         UserModule,
     ],
     controllers: [BlogController],
-    providers: [BlogService, BlogQueryRepository, BlogRepository ],
-    exports: [BlogRepository],
+    providers: [BlogService, BlogQueryRepository, BlogRepository, S3Service ],
+    exports: [BlogRepository, S3Service],
 })
 export class BlogModule {}

@@ -3,7 +3,7 @@ import {
     Controller,
     Delete,
     Get,
-    HttpCode,
+    HttpCode, InternalServerErrorException,
     NotFoundException,
     Param,
     Post, Put,
@@ -19,6 +19,7 @@ import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {s3} from "../../../../aws.config";
 import {Response} from "express";
+import {S3Service} from "../../../common/services/s3.service";
 
 
 @Controller('/users')
@@ -28,7 +29,8 @@ export class UserController {
 
     constructor(
         userService: UserService,
-        private userQueryRepository: UserQueryRepository
+        private userQueryRepository: UserQueryRepository,
+        private readonly s3Service: S3Service,
     ) {
         this.userService = userService
     }
@@ -90,28 +92,17 @@ export class UserController {
 
                 if (oldKey) {
                     try {
-                        await s3
-                            .deleteObject({
-                                Bucket: process.env.AWS_BUCKET_NAME as string,
-                                Key: oldKey,
-                            })
-                            .promise();
+                        await this.s3Service.deleteFile(oldKey)
                     } catch (error) {
-                        console.error(`Cannot delete old img: ${error.message}`);
+                        throw new InternalServerErrorException(
+                            `Failed to delete old image with key: ${oldKey}. ${error.message}`)
                     }
                 }
             }
 
-            const uploadResult = await s3
-                .upload({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: `blogs/${Date.now()}_${file.originalname}`,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                })
-                .promise();
-
-            imageUrl = uploadResult.Location;
+            if (file) {
+                imageUrl = await this.s3Service.uploadFile(file, 'blogs');
+            }
         }
 
         const newUser = await this.userService.changeUserData(userId, changeUserDto.login, imageUrl)

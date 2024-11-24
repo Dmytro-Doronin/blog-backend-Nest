@@ -2,7 +2,7 @@ import {
     Body,
     Controller,
     Delete,
-    Get, HttpCode,
+    Get, HttpCode, InternalServerErrorException,
     NotFoundException,
     Param,
     Post,
@@ -23,6 +23,7 @@ import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.gu
 import { S3 } from 'aws-sdk';
 import {s3} from '../../../../aws.config';
 import {FileInterceptor} from "@nestjs/platform-express";
+import {S3Service} from "../../../common/services/s3.service";
 
 @Controller('/blogs')
 export class BlogController {
@@ -32,6 +33,7 @@ export class BlogController {
         postService: PostService,
         blogService: BlogService,
         private readonly blogsQueryRepository: BlogQueryRepository,
+        private readonly s3Service: S3Service,
     ) {
         this.blogService = blogService
         this.postService = postService
@@ -101,17 +103,21 @@ export class BlogController {
         const userId = req.user.userId
 
         let imageUrl = '';
-        if (file) {
-            const uploadResult = await s3
-                .upload({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: `blogs/${Date.now()}_${file.originalname}`,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                })
-                .promise();
+        // if (file) {
+        //     const uploadResult = await s3
+        //         .upload({
+        //             Bucket: process.env.AWS_BUCKET_NAME as string,
+        //             Key: `blogs/${Date.now()}_${file.originalname}`,
+        //             Body: file.buffer,
+        //             ContentType: file.mimetype,
+        //         })
+        //         .promise();
+        //
+        //     imageUrl = uploadResult.Location;
+        // }
 
-            imageUrl = uploadResult.Location;
+        if (file) {
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
         }
 
         const result = await this.blogService.createBlogService({
@@ -138,16 +144,7 @@ export class BlogController {
 
         let imageUrl = '';
         if (file) {
-            const uploadResult = await s3
-                .upload({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: `blogs/${Date.now()}_${file.originalname}`,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                })
-                .promise();
-
-            imageUrl = uploadResult.Location;
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
         }
 
         const post = await this.postService.createPostService({
@@ -227,31 +224,17 @@ export class BlogController {
 
             if (oldKey) {
                 try {
-                    await s3
-                        .deleteObject({
-                            Bucket: process.env.AWS_BUCKET_NAME as string,
-                            Key: oldKey,
-                        })
-                        .promise()
-                    console.log(`Old img ${oldKey} deleted`)
+                    await this.s3Service.deleteFile(oldKey)
                 } catch (error) {
-                    console.error(`Ca not delete ol img: ${error.message}`)
+                    throw new InternalServerErrorException(
+                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
                 }
             }
         }
 
         let imageUrl: string | undefined;
         if (file) {
-            const uploadResult = await s3
-                .upload({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: `blogs/${Date.now()}_${file.originalname}`,
-                    Body: file.buffer,
-                    ContentType: file.mimetype,
-                })
-                .promise();
-
-            imageUrl = uploadResult.Location;
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
         }
 
         const result = await this.blogService.changeBlogByIdService({
@@ -289,12 +272,14 @@ export class BlogController {
         if (existingBlog.imageUrl) {
             let oldKey = existingBlog.imageUrl.split('amazonaws.com/')[1]
             oldKey = decodeURIComponent(oldKey)
-            await s3
-                .deleteObject({
-                    Bucket: process.env.AWS_BUCKET_NAME as string,
-                    Key: oldKey,
-                })
-                .promise();
+            if (oldKey) {
+                try {
+                    await this.s3Service.deleteFile(oldKey)
+                } catch (error) {
+                    throw new InternalServerErrorException(
+                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
+                }
+            }
         }
 
     }
