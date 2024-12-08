@@ -32,7 +32,6 @@ export class BlogQueryRepository {
         // if (userId) {
         //
         // }
-
         try {
             const blogs = await this.BlogModel
                 .find(filter)
