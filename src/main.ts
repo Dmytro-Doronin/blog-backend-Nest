@@ -10,6 +10,7 @@ async function bootstrap() {
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'https://blog-frontend-angular-eight.vercel.app')
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
     if (req.method === 'OPTIONS') {
       res.sendStatus(204);
@@ -20,7 +21,7 @@ async function bootstrap() {
   app.use(cookieParser());
   mainAppSettings(app)
   app.enableCors({
-    origin: 'https://blog-frontend-angular-eight.vercel.app/',
+    origin: 'https://blog-frontend-angular-eight.vercel.app',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
