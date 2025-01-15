@@ -6,7 +6,7 @@ import {
     NotFoundException,
     Post,
     Request,
-    Res,
+    Res, UseFilters,
     UseGuards,
     ValidationPipe
 } from '@nestjs/common';
@@ -21,6 +21,7 @@ import {CustomJwtService} from "../../../common/jwt-module/service/jwt.service";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {UserRepository} from "../../user/repositories/user.repository";
 import UAParser from 'ua-parser-js';
+import {UserDoesNotExistsFilter} from "../filter/global.filter";
 
 
 @Controller('/auth')
@@ -34,6 +35,7 @@ export class AuthController {
         private readonly jwtService: CustomJwtService
     ) {}
 
+    @UseFilters(UserDoesNotExistsFilter)
     @UseGuards(LocalAuthGuard)
     @Post('/login')
     async login(
@@ -46,8 +48,8 @@ export class AuthController {
         const parser = new UAParser(userAgent);
         const result = parser.getResult();
         // const title = result.device.model
+
         const title = result.browser.name
-        console.log(ip)
         let title2
         if (typeof title !== "string" || typeof title !== undefined) {
             title2 = title
@@ -68,8 +70,6 @@ export class AuthController {
         });
         res.status(200).send({ accessToken });
         // res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true,  });
-
-
 
     }
 

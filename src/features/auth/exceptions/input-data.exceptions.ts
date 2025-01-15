@@ -12,3 +12,16 @@ export class UserAlreadyExistsException extends HttpException {
         );
     }
 }
+
+export class UserDoesNotExistsException extends HttpException {
+
+    constructor(field: string) {
+        super(
+            {
+                message: 'Invalid credentials',
+                field: field,
+            },
+            HttpStatus.BAD_REQUEST,
+        );
+    }
+}

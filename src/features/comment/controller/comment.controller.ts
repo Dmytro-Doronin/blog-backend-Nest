@@ -114,7 +114,6 @@ export class CommentController {
         }
 
         const likeOrDislike = await this.queryLikeRepository.getLike(userId,commentId)
-        console.log(likeOrDislike)
         if (!likeOrDislike) {
             await this.likeService.createLike(commentId, likeStatus.likeStatus, userId, target)
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);

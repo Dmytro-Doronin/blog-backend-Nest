@@ -2,6 +2,7 @@ import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {PassportStrategy} from "@nestjs/passport";
 import {Strategy} from "passport-local";
 import {AuthService} from "../service/auth.service";
+import {UserDoesNotExistsException} from "../exceptions/input-data.exceptions";
 
 
 @Injectable()
@@ -12,8 +13,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     async validate(loginOrEmail: string, password: string): Promise<any> {
         const user = await this.authService.validateUser(loginOrEmail, password);
+        console.log(user)
         if (!user) {
-            throw new UnauthorizedException();
+            throw new UserDoesNotExistsException('LoginOrEmail');
         }
         return user;
     }

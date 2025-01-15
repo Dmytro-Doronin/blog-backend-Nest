@@ -207,48 +207,49 @@ export class BlogController {
     @UseInterceptors(FileInterceptor('image'))
     @HttpCode(204)
     @Put('/:id')
-    async putBlogByIdController (
+    async putBlogByIdController(
         @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createBlogDto: CreateBolgDto,
         @Param('id') blogId: string,
-
     ) {
         const existingBlog = await this.blogsQueryRepository.getBlogByIdInDb(blogId);
+
         if (!existingBlog) {
             throw new NotFoundException('Blog not found');
         }
 
-        if (existingBlog.imageUrl) {
-            let oldKey = existingBlog.imageUrl.split('.com/')[1]
-            oldKey = decodeURIComponent(oldKey)
+        let imageUrl: string | undefined = existingBlog.imageUrl;
 
-            if (oldKey) {
-                try {
-                    await this.s3Service.deleteFile(oldKey)
-                } catch (error) {
-                    throw new InternalServerErrorException(
-                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
+        if (file) {
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
+
+            if (existingBlog.imageUrl) {
+                const oldKey = decodeURIComponent(existingBlog.imageUrl.split('.com/')[1]);
+
+                if (oldKey) {
+                    try {
+                        await this.s3Service.deleteFile(oldKey);
+                    } catch (error) {
+                        throw new InternalServerErrorException(
+                            `Failed to delete old image with key: ${oldKey}. ${error.message}`,
+                        );
+                    }
                 }
             }
         }
 
-        let imageUrl: string | undefined;
-        if (file) {
-            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
-        }
 
         const result = await this.blogService.changeBlogByIdService({
             id: blogId,
             name: createBlogDto.name,
             description: createBlogDto.description,
             websiteUrl: createBlogDto.websiteUrl,
-            imageUrl: imageUrl
-        })
+            imageUrl,
+        });
 
         if (!result) {
-            throw new NotFoundException('Blog was not changed')
+            throw new NotFoundException('Blog was not changed');
         }
-
     }
 
     // @UseGuards(BasicAuthGuard)

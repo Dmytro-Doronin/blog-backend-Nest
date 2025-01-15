@@ -147,25 +147,27 @@ export class PostController {
             throw new NotFoundException('Post not found')
         }
 
+        let imageUrl: string | undefined = existingPost.imageUrl;
 
-        if (existingPost.imageUrl) {
-            let oldKey = existingPost.imageUrl.split('.com/')[1]
-            oldKey = decodeURIComponent(oldKey)
 
-            if (oldKey) {
-                try {
-                    await this.s3Service.deleteFile(oldKey)
-                } catch (error) {
-                    throw new InternalServerErrorException(
-                        `Failed to delete old image with key: ${oldKey}. ${error.message}`)
+        if (file) {
+            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
+
+            if (existingPost.imageUrl) {
+                let oldKey = existingPost.imageUrl.split('.com/')[1]
+                oldKey = decodeURIComponent(oldKey)
+
+                if (oldKey) {
+                    try {
+                        await this.s3Service.deleteFile(oldKey)
+                    } catch (error) {
+                        throw new InternalServerErrorException(
+                            `Failed to delete old image with key: ${oldKey}. ${error.message}`)
+                    }
                 }
             }
         }
 
-        let imageUrl: string | undefined;
-        if (file) {
-            imageUrl = await this.s3Service.uploadFile(file, 'blogs');
-        }
 
 
         const result = await this.postService.changePostByIdService({
