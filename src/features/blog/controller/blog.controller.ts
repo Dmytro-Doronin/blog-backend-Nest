@@ -10,20 +10,18 @@ import {
     Query, Request, Res, UploadedFile, UseGuards, UseInterceptors,
     ValidationPipe
 } from "@nestjs/common";
-import {NumberPipes} from "../../../common/pipes/number.pipe";
 import {BlogQueryRepository} from "../repositories/blog.query-repository";
 import {BlogService} from "../services/blog.service";
 import {CreateBolgDto, CreatePostInBolgDto} from "./models/create-blog.dto";
 import {PostService} from "../../post/services/post.service";
 import {QueryBlogInputModel, QueryPostInputModel} from "../../../common/types/common.types";
-import {BasicAuthGuard} from "../../auth/guards/basic-auth.guard";
 import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
 import {Response} from "express";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
-import { S3 } from 'aws-sdk';
-import {s3} from '../../../../aws.config';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {S3Service} from "../../../common/services/s3.service";
+import {imageFileFilter} from "../../../common/utils/file-filter.utils";
+import {async} from "rxjs";
 
 @Controller('/blogs')
 export class BlogController {
@@ -92,7 +90,12 @@ export class BlogController {
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post()
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 5 * 1024 * 1024 },
+        }),
+    )
     async createNewBlogController(
         @UploadedFile() file: Express.Multer.File,
         @Request() req,
@@ -204,9 +207,14 @@ export class BlogController {
     // @UseGuards(BasicAuthGuard)
 
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('image'))
     @HttpCode(204)
     @Put('/:id')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 5 * 1024 * 1024 },
+        }),
+    )
     async putBlogByIdController(
         @UploadedFile() file: Express.Multer.File,
         @Body(new ValidationPipe()) createBlogDto: CreateBolgDto,

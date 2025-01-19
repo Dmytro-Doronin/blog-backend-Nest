@@ -20,6 +20,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {s3} from "../../../../aws.config";
 import {Response} from "express";
 import {S3Service} from "../../../common/services/s3.service";
+import {imageFileFilter} from "../../../common/utils/file-filter.utils";
 
 
 @Controller('/users')
@@ -64,7 +65,12 @@ export class UserController {
 
 
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 5 * 1024 * 1024 },
+        }),
+    )
     // @HttpCode(204)
     @Put()
     async changeUser (

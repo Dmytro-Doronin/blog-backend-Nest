@@ -26,6 +26,7 @@ import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.gu
 import {FileInterceptor} from "@nestjs/platform-express";
 import {s3} from "../../../../aws.config";
 import {S3Service} from "../../../common/services/s3.service";
+import {imageFileFilter} from "../../../common/utils/file-filter.utils";
 
 @Controller('/posts')
 export class PostController {
@@ -73,7 +74,12 @@ export class PostController {
 
     }
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 5 * 1024 * 1024 },
+        }),
+    )
     // @UseGuards(BasicAuthGuard)
     @Post()
     async createPost (
@@ -132,7 +138,12 @@ export class PostController {
 
     // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+            fileFilter: imageFileFilter,
+            limits: { fileSize: 5 * 1024 * 1024 },
+        }),
+    )
     @HttpCode(204)
     @Put('/:id')
     async changePostById (
