@@ -32,7 +32,7 @@ async function bootstrap() {
   app.use(cookieParser());
   mainAppSettings(app)
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: 'https://blog-frontend-angular-eight.vercel.app',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
