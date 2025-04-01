@@ -45,11 +45,6 @@ export class BlogRepository {
 
     async changeBlogByIdInDb ({id ,name, description, websiteUrl, imageUrl}: ChangeBlogByIdTypes & { imageUrl?: string }) {
         try {
-            // const addedItem = await this.BlogModel.findOne({id: id}).lean()
-            //
-            // if (!addedItem) {
-            //     return null
-            // }
 
             const updateData: any = {
                 name,

@@ -23,15 +23,6 @@ export class BlogQueryRepository {
             ...(userId && { userId }),
         };
 
-        // if (searchNameTerm) {
-        //     filter = {
-        //         name: {$regex: searchNameTerm, $options: 'i'}
-        //     }
-        // }
-        //
-        // if (userId) {
-        //
-        // }
         try {
             const blogs = await this.BlogModel
                 .find(filter)
@@ -57,47 +48,6 @@ export class BlogQueryRepository {
         }
 
     }
-
-    // async getAllBlogForCurrentUserInDb (sortData: QueryBlogInputModel, userId: string): Promise<BlogFinalOutputModel>{
-    //     const searchNameTerm = sortData.searchNameTerm ?? null
-    //     const sortBy = sortData.sortBy ?? 'createdAt'
-    //     const sortDirection  = sortData.sortDirection ?? 'desc'
-    //     const pageNumber = sortData.pageNumber ?? 1
-    //     const pageSize = sortData.pageSize ?? 10
-    //
-    //     let filter = {}
-    //
-    //     if (searchNameTerm) {
-    //         filter = {
-    //             name: {$regex: searchNameTerm, $options: 'i'}
-    //         }
-    //     }
-    //     try {
-    //         const blogs = await this.BlogModel
-    //             .find(filter)
-    //             .sort(filterForSort(sortBy, sortDirection))
-    //             .skip((+pageNumber - 1) * +pageSize)
-    //             .limit(+pageSize)
-    //             .lean()
-    //
-    //         const totalCount = await this.BlogModel.countDocuments(filter)
-    //
-    //         const pagesCount = Math.ceil(totalCount / +pageSize)
-    //
-    //
-    //         return {
-    //             pagesCount,
-    //             page: +pageNumber,
-    //             pageSize: +pageSize,
-    //             totalCount,
-    //             items: blogs.map(BlogOutputModelMapper)
-    //         }
-    //     } catch (e) {
-    //         throw new Error('Does not get all blogs')
-    //     }
-    //
-    // }
-
 
     async getBlogByIdInDb (id: string): Promise<BlogOutputModel | null>  {
 

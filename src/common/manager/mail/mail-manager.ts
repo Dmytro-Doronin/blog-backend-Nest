@@ -6,7 +6,7 @@ export class MailManager  {
 
         const htmlMessage = ` <h1>Thanks for your registration dear ${subject}</h1>
                         <p>To finish registration please follow the link below:
-                                <a href='http://localhost:4200/auth/email-confirmation?code=${code}'>complete registration</a>
+                                <a href='https://blog-frontend-angular-eight.vercel.app/auth/email-confirmation?code=${code}'>complete registration</a>
       
                         </p>`
         return await emailAdapter.send(subject, email, htmlMessage)
@@ -16,7 +16,7 @@ export class MailManager  {
 
         const htmlMessage = `<h1>Password recovery</h1>
        <p>To finish password recovery please follow the link below:
-          <a href='http://localhost:4200/auth/new-password?recoveryCode=${code}'>recovery password</a>
+          <a href='https://blog-frontend-angular-eight.vercel.app/auth/new-password?recoveryCode=${code}'>recovery password</a>
       </p>`
         return await emailAdapter.send(subject, email, htmlMessage)
     }

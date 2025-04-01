@@ -1,5 +1,5 @@
 import {Trim} from "../../../../common/decorators/trim";
-import {IsEmail, IsString, IsUrl, Length, MaxLength, MinLength} from "class-validator";
+import {IsEmail, IsString, Length} from "class-validator";
 import {
     IsUserAlreadyExist
 } from "../../../../common/validator/validation-login-password.validator";
@@ -72,11 +72,4 @@ export class NewPasswordDto {
     @IsString()
     @Length(1, 100)
     readonly recoveryCode: string
-}
-
-export class AccessTokenDto {
-    @Trim()
-    @IsString()
-    @Length(1)
-    readonly accessToken: string
 }

@@ -21,7 +21,6 @@ import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.gu
 import {FileInterceptor} from "@nestjs/platform-express";
 import {S3Service} from "../../../common/services/s3.service";
 import {imageFileFilter} from "../../../common/utils/file-filter.utils";
-import {async} from "rxjs";
 
 @Controller('/blogs')
 export class BlogController {
@@ -87,7 +86,6 @@ export class BlogController {
 
     }
 
-    // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post()
     @UseInterceptors(
@@ -106,18 +104,7 @@ export class BlogController {
         const userId = req.user.userId
 
         let imageUrl = '';
-        // if (file) {
-        //     const uploadResult = await s3
-        //         .upload({
-        //             Bucket: process.env.AWS_BUCKET_NAME as string,
-        //             Key: `blogs/${Date.now()}_${file.originalname}`,
-        //             Body: file.buffer,
-        //             ContentType: file.mimetype,
-        //         })
-        //         .promise();
-        //
-        //     imageUrl = uploadResult.Location;
-        // }
+
 
         if (file) {
             imageUrl = await this.s3Service.uploadFile(file, 'blogs');
@@ -135,7 +122,6 @@ export class BlogController {
 
     }
 
-    // @UseGuards(BasicAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post('/:id/posts')
     @UseInterceptors(FileInterceptor('image'))
@@ -204,7 +190,6 @@ export class BlogController {
 
     }
 
-    // @UseGuards(BasicAuthGuard)
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(204)

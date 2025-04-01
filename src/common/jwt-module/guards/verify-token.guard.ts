@@ -7,7 +7,6 @@ import {CustomJwtService} from "../service/jwt.service";
 @Injectable()
 export class VerifyRefreshTokenGuard implements CanActivate {
     constructor(
-        // private readonly jwtService: JwtService
         private readonly jwtService: CustomJwtService
     ) {}
 
@@ -16,7 +15,6 @@ export class VerifyRefreshTokenGuard implements CanActivate {
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
         const refreshTokenFromCookie = request.cookies.refreshToken;
-        // console.log('refreshCookie in guard', request.cookies.refreshToken)
 
         if (!refreshTokenFromCookie) {
             return false;
@@ -25,7 +23,6 @@ export class VerifyRefreshTokenGuard implements CanActivate {
         try {
             const decodedToken = this.jwtService.verifyRefreshToken(refreshTokenFromCookie);
             request.userId = decodedToken.sub;
-            request.deviceId = decodedToken.deviceId;
             return true;
         } catch (error) {
             return false;

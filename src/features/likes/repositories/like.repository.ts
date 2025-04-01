@@ -18,14 +18,6 @@ export class LikeRepository {
         }
     }
 
-    // async getAllLikesAndDislikesForCurrentComment (targetId: string) {
-    //     try {
-    //         return await this.LikeModel.find({targetId: targetId}).lean()
-    //
-    //     } catch (e) {
-    //         throw new Error('Can not get All Likes And Dislikes')
-    //     }
-    // }
     async getAllLikesAndDislikesForTarget(targetId: string) {
         try {
             return await this.LikeModel.find({ targetId }).lean()

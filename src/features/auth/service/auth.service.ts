@@ -16,7 +16,6 @@ export class AuthService {
         private jwtService: CustomJwtService,
         private mailManager: MailManager,
         private userRepository: UserRepository,
-        // private createJwtService: CreateJwtService
 
     ) {}
 
@@ -38,14 +37,7 @@ export class AuthService {
     async createJWT(user: UserOutputModel | UserServiceModel) {
 
         const {refreshToken, accessToken} = await this.jwtService.createJWT(user)
-        // const currentDate = new Date()
-        // const accessTokenPayload = { sub: user.id };
-        // const refreshTokenPayload = {
-        //     sub: user.id,
-        //     lastActiveDate: currentDate,
-        //     expireDate: new Date(currentDate.getTime() + 20 * 1000),
-        //     deviceId: uuidv4()
-        // };
+
         return {
             accessToken,
             refreshToken
