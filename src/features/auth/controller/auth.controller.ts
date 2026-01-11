@@ -56,7 +56,6 @@ export class AuthController {
         const { accessToken, refreshToken } = await this.authService.createJWT(user)
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
-
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
@@ -135,7 +134,6 @@ export class AuthController {
         @Res() res: Response,
          ) {
         const userId = req.userId;
-
         const user = await this.userQueryRepository.getUserById(userId)
 
         const {refreshToken, accessToken} = await this.customJwtService.createJWT(user)
@@ -145,6 +143,7 @@ export class AuthController {
         if (!result) {
             throw new NotFoundException('Device data was not changed')
         }
+
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
         res.send({ accessToken });
 
@@ -159,6 +158,14 @@ export class AuthController {
         const deviceId = req.deviceId
 
         await this.deviceService.deleteDevice(deviceId)
+
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            path: '/',
+        });
+
         res.sendStatus(204)
     }
 
