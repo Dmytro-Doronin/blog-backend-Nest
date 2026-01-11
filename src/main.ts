@@ -22,7 +22,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
         'https://blog-frontend-angular-eight.vercel.app',
-        "http://localhost:5173",
+        'http://localhost:5173',
+        'https://lead-blog-adcd.vercel.app'
     ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
