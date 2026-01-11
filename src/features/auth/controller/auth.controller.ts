@@ -57,11 +57,17 @@ export class AuthController {
 
         await this.deviceService.createDevice(refreshToken, ip, title2)
 
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: 'none',
+        // });
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: false,
+            sameSite: 'lax',
         });
+
         res.status(200).send({ accessToken });
 
     }
