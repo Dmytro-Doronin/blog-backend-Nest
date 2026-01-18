@@ -25,7 +25,8 @@ export class BlogRepository {
 
             return result
         } catch (e) {
-            throw new Error('Blog was not created')
+            console.error('createBlogInDb error:', e);
+            throw e;
         }
     }
 
