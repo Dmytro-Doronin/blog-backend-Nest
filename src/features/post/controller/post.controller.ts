@@ -291,18 +291,17 @@ export class PostController {
         res.status(201).send(comment)
 
     }
-
+    @HttpCode(200)
     @UseGuards(JwtAuthGuard)
     @Put('/:id/like-status')
     async setLikeStatusForPosts(
         @Request() req,
-        @Res() res: Response,
         @Param('id') postId: string,
         @Body(new ValidationPipe()) likeStatus: LikeStatusDto
     ) {
         const target = "Post"
         const userId = req.user.userId
-
+        console.log(likeStatus)
         const post = await this.postQueryRepository.getPostById(postId)
 
 
@@ -310,25 +309,22 @@ export class PostController {
             throw new NotFoundException('Post not found')
         }
 
-        const likeOrDislike = await this.queryLikeRepository.getLike(userId, postId)
+        const likeOrDislike = await this.queryLikeRepository.getLike(userId, postId, 'Post')
 
         if (!likeOrDislike) {
-            await this.likeService.createLike(postId, likeStatus.likeStatus, userId, target)
-            throw new HttpException('No Content', HttpStatus.NO_CONTENT);
+            await this.likeService.createLike(postId, likeStatus.likeStatus, userId, target);
+        } else if (likeStatus.likeStatus === likeOrDislike.type) {
+            await this.likeService.changeLikeStatus(postId, 'None', userId, target);
+        } else {
+            await this.likeService.changeLikeStatus(postId, likeStatus.likeStatus, userId, target);
         }
 
-        if (likeStatus.likeStatus === likeOrDislike.type) {
-            await this.likeService.changeLikeStatus(postId, 'None', userId, target)
-            throw new HttpException('No Content', HttpStatus.NO_CONTENT);
+        const updated = await this.postService.getPostById(postId, userId);
+        if (!updated) {
+            throw new NotFoundException('Post not found');
         }
-
-        const result = await this.likeService.changeLikeStatus(postId, likeStatus.likeStatus, userId, target)
-
-        if (!result) {
-            throw new NotFoundException()
-        }
-
-        return res.sendStatus(204)
+        console.log('UPDATED IN CONTROLLER', updated);
+        return updated;
 
     }
 

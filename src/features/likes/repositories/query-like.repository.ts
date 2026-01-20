@@ -8,9 +8,9 @@ export class QueryLikeRepository {
 
     constructor(@InjectModel(Like.name) private LikeModel: Model<Like>) {}
 
-    async getLike (userId: string, targetId: string) {
+    async getLike (userId: string, targetId: string, target: 'Post' | 'Comment') {
         try {
-            return await this.LikeModel.findOne({userId: userId ,targetId: targetId}).lean()
+            return await this.LikeModel.findOne({userId: userId ,targetId: targetId, target }).lean()
 
         } catch (e) {
             throw new Error('Can not get like or dislike')

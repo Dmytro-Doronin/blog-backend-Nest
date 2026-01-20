@@ -113,7 +113,7 @@ export class CommentController {
             throw new NotFoundException()
         }
 
-        const likeOrDislike = await this.queryLikeRepository.getLike(userId,commentId)
+        const likeOrDislike = await this.queryLikeRepository.getLike(userId,commentId, 'Comment')
         if (!likeOrDislike) {
             await this.likeService.createLike(commentId, likeStatus.likeStatus, userId, target)
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
