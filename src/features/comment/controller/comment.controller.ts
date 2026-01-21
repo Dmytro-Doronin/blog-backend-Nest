@@ -1,7 +1,7 @@
 import {
     Body,
     Controller, Delete, ForbiddenException,
-    Get, HttpException, HttpStatus,
+    Get, HttpCode, HttpException, HttpStatus,
     NotFoundException,
     Param,
     Put,
@@ -19,6 +19,7 @@ import {QueryLikeRepository} from "../../likes/repositories/query-like.repositor
 import {LikeService} from "../../likes/service/like.service";
 import {OptionalJwtAuthGuard} from "../../auth/guards/optional-jwt-auth-guard.guard";
 import {S3Service} from "../../../common/services/s3.service";
+import {likeStatusType} from "../../../common/types/common.types";
 
 @Controller('/comments')
 export class CommentController {
@@ -97,38 +98,42 @@ export class CommentController {
 
         return res.sendStatus(204)
     }
-
+    @HttpCode(200)
     @UseGuards(JwtAuthGuard)
     @Put('/:commentId/like-status')
-    async setLikeStatusForComments (
+    async setLikeStatusForComments(
         @Request() req,
-        @Res() res: Response,
         @Param('commentId') commentId: string,
-        @Body(new ValidationPipe()) likeStatus: CommentLikeStatusDto
+        @Body(new ValidationPipe()) dto: CommentLikeStatusDto,
     ) {
-        const target = "Comment"
-        const userId = req.user.userId
-        const comment = await this.commentQueryRepository.getCommentById(commentId)
+        const userId = req.user.userId;
+        const target = 'Comment';
+
+        const comment = await this.commentQueryRepository.getCommentById(commentId);
         if (!comment) {
-            throw new NotFoundException()
+            throw new NotFoundException();
         }
 
-        const likeOrDislike = await this.queryLikeRepository.getLike(userId,commentId, 'Comment')
-        if (!likeOrDislike) {
-            await this.likeService.createLike(commentId, likeStatus.likeStatus, userId, target)
-            throw new HttpException('No Content', HttpStatus.NO_CONTENT);
+        const existing = await this.queryLikeRepository.getLike(userId, commentId, target);
+
+        const nextStatus: likeStatusType =
+            existing && existing.type === dto.likeStatus ? 'None' : dto.likeStatus;
+
+        if (!existing) {
+            if (nextStatus !== 'None') {
+                await this.likeService.createLike(commentId, nextStatus, userId, target);
+            }
+        } else {
+            await this.likeService.changeLikeStatus(commentId, nextStatus, userId, target);
         }
 
-        if (likeStatus.likeStatus === likeOrDislike.type) {
-            throw new HttpException('No Content', HttpStatus.NO_CONTENT);
+        const updated = await this.commentService.getCommentByIdService(commentId, userId);
+        if (!updated) {
+            throw new NotFoundException();
         }
 
-        const result = await this.likeService.changeLikeStatus(commentId, likeStatus.likeStatus, userId, target)
-        if (!result) {
-            throw new NotFoundException()
-        }
-
-        return res.sendStatus(204)
+        return updated;
     }
+
 
 }

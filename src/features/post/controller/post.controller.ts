@@ -323,7 +323,6 @@ export class PostController {
         if (!updated) {
             throw new NotFoundException('Post not found');
         }
-        console.log('UPDATED IN CONTROLLER', updated);
         return updated;
 
     }
