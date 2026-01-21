@@ -48,7 +48,7 @@ export class UserService {
             return null
         }
 
-        await this.mailManager.sendConfirmationMail(newUser.accountData.login, newUser.accountData.email, newUser.emailConfirmation.confirmationCode)
+        // await this.mailManager.sendConfirmationMail(newUser.accountData.login, newUser.accountData.email, newUser.emailConfirmation.confirmationCode)
 
         return UserOutputMapper(user)
 
