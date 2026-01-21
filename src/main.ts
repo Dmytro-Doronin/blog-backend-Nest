@@ -19,18 +19,33 @@ async function bootstrap() {
     // });
   app.use(cookieParser());
   mainAppSettings(app)
-  app.enableCors({
-    origin: [
-        'https://blog-frontend-angular-eight.vercel.app',
-        'http://localhost:5173',
-        'https://lead-blog-adcd.vercel.app'
-    ],
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-  });
+    app.enableCors({
+        origin: (origin, callback) => {
+            if (!origin) {
+                return callback(null, true);
+            }
+
+            const allowlist = new Set([
+                'http://localhost:5173',
+                'https://lead-blog-brh3.vercel.app',
+                'https://blog-frontend-angular-eight.vercel.app',
+            ]);
+
+            const vercelPreview =
+                /^https:\/\/lead-blog-brh3(-[a-z0-9-]+)?\.vercel\.app$/i;
+
+            if (allowlist.has(origin) || vercelPreview.test(origin)) {
+                return callback(null, true);
+            }
+
+            return callback(new Error(`CORS blocked for origin: ${origin}`), false);
+        },
+
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type, Accept, Authorization',
+        optionsSuccessStatus: 204,
+    });
 
 
   await app.listen(3000);
